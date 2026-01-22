@@ -40,3 +40,9 @@ uploads/*
 
 # Misc
 *.tsbuildinfo
+
+# Personal/Learning files (không push lên repo)
+CLAUDE.md
+LEARNSTART.md
+PROGRESS.md
+PROJECT_CONTEXT.md
