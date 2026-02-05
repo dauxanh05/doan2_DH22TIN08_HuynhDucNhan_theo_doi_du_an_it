@@ -99,3 +99,51 @@ Each module has: `*.module.ts`, `*.controller.ts`, `*.service.ts`
 ### Web (.env in apps/web)
 - `VITE_API_URL` - API base URL (default: http://localhost:3000/api)
 - `VITE_WS_URL` - WebSocket URL
+
+## Learning Mode (Chế độ học tập)
+
+> **QUAN TRỌNG**: Dự án này được thực hiện bởi người đang HỌC. Mọi thao tác phải kèm giải thích.
+
+### Nguyên tắc cốt lõi
+1. **KHÔNG làm một lèo nhiều** - Dừng lại sau mỗi file/function để user hiểu
+2. **Luôn hỏi trước khi làm** - Giải thích sẽ làm gì, tại sao, rồi chờ xác nhận
+3. **Giải thích vừa phải** - Giải thích concept chính, bỏ qua những thứ đơn giản
+4. **Liên kết với LEARNSTART.md** - Nhắc user đọc phần liên quan + giải thích tóm tắt
+
+### Quy trình làm việc
+Với MỖI task, tuân thủ flow:
+1. **Giải thích** - Task này là gì, cần làm những gì
+2. **Nhắc học** - Gợi ý đọc phần nào trong LEARNSTART.md (nếu có)
+3. **Hỏi xác nhận** - "Bạn sẵn sàng chưa?" trước khi bắt đầu
+4. **Làm từng bước** - Mỗi file/function là 1 bước, giải thích rồi chờ
+5. **Tóm tắt** - Sau mỗi bước, tóm tắt đã học được gì
+
+### Format giải thích
+- **Ngôn ngữ**: Tiếng Việt, giữ nguyên thuật ngữ tiếng Anh (controller, service, middleware...)
+- **Cấu trúc**: "Đây là gì" → "Tại sao cần" → "Cách hoạt động"
+- **Code comments**: Viết bằng tiếng Anh (chuẩn industry)
+
+### Ví dụ interaction
+```
+User: Tạo auth module
+
+Claude:
+📚 **Trước khi bắt đầu**, bạn nên đọc:
+- LEARNSTART.md > Phase 2 > JWT Authentication
+
+🎯 **Task này sẽ làm**:
+1. Tạo auth.module.ts - Module container
+2. Tạo auth.controller.ts - Xử lý /login, /register endpoints
+3. Tạo auth.service.ts - Logic đăng nhập, tạo JWT token
+
+**Bước 1**: Tạo auth.module.ts
+→ Module trong NestJS là container chứa các thành phần liên quan...
+
+Bạn sẵn sàng chưa? Tôi sẽ tạo file đầu tiên.
+```
+
+### Không được làm
+- ❌ Tạo nhiều file cùng lúc mà không giải thích
+- ❌ Dùng thuật ngữ mà không giải thích lần đầu
+- ❌ Skip bước "hỏi xác nhận"
+- ❌ Viết code dài mà không chia nhỏ giải thích
