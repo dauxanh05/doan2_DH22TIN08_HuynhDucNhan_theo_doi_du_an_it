@@ -46,3 +46,7 @@ CLAUDE.md
 LEARNSTART.md
 PROGRESS.md
 PROJECT_CONTEXT.md
+
+# Claude Code / AMP Code skills
+.claude/
+.agents/
