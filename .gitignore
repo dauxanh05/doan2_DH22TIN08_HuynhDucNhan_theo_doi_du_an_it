@@ -50,3 +50,6 @@ AI_TASK_INSTRUCTION.md
 .claude/
 .agents/
 memory/
+
+# Branch agent docs (chi dung local, khong push)
+branches/

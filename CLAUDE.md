@@ -100,6 +100,52 @@ Each module has: `*.module.ts`, `*.controller.ts`, `*.service.ts`
 - `VITE_API_URL` - API base URL (default: http://localhost:3000/api)
 - `VITE_WS_URL` - WebSocket URL
 
+## Branch Workflow
+
+### Branch Strategy
+- **Main branch**: Planning & review only, KHÔNG code trực tiếp trên main.
+- **Merge flow tuần tự**: `00-chore-foundation` → `main` → `01-feat-auth-be` → `main` → ...
+
+### Branches
+| # | Branch | Scope |
+|---|--------|-------|
+| 00 | `00-chore-foundation` | Prisma schema, .env, Docker, Shared types, CLAUDE.md |
+| 01 | `01-feat-auth-be` | Register, Login, JWT, Refresh, Google OAuth, Email Verify, Forgot/Reset PW |
+| 02 | `02-feat-auth-fe` | LoginPage, RegisterPage, ForgotPW, auth.store, ProtectedRoute |
+| 03 | `03-feat-workspace-be` | Workspace CRUD, Members, Invitation, Role Guard |
+| 04 | `04-feat-workspace-fe` | WorkspaceList, Settings, Members, Switcher |
+| 05 | `05-feat-project-task-be` | Project + Task CRUD, Subtasks, Checklist, Attachments, File upload |
+| 06 | `06-feat-project-task-fe` | ProjectList, ProjectDetail, TaskDetailModal |
+| 07 | `07-feat-ai-be` | 4 AI endpoints (split-task, analyze, assign, code-assist) |
+| 08 | `08-feat-ai-fe` | 4 AI components |
+| 09 | `09-feat-kanban-fe` | KanbanBoard, @dnd-kit drag-drop, Reorder API |
+| 10 | `10-feat-realtime-be` | Comments, Notifications, WebSocket Gateway |
+| 11 | `11-feat-realtime-fe` | CommentSection, NotificationBell, socket.ts |
+| 12 | `12-feat-dashboard-be` | Stats API, Activity feed |
+| 13 | `13-feat-dashboard-fe` | 5 Widgets, Recharts |
+| 14 | `14-feat-polish` | Error handling, Loading, Responsive |
+| 15 | `15-chore-deploy` | Docker, Nginx, PM2, CI/CD |
+
+### Commit Message Convention
+Format: `type(scope): message`
+
+**Types:**
+- `feat` - Tính năng mới
+- `fix` - Sửa bug
+- `chore` - Config, setup, không ảnh hưởng logic
+- `refactor` - Tái cấu trúc code, không thay đổi behavior
+- `docs` - Tài liệu
+- `style` - Format code, không ảnh hưởng logic
+
+**Scopes:** `auth`, `workspace`, `project`, `task`, `ai`, `kanban`, `realtime`, `dashboard`, `prisma`, `shared`, `deploy`
+
+**Examples:**
+```
+feat(auth): add JWT refresh token rotation
+fix(task): correct subtask position ordering
+chore(prisma): add RefreshToken and Activity models
+```
+
 ## Learning Mode (Chế độ học tập)
 
 > **QUAN TRỌNG**: Dự án này được thực hiện bởi người đang HỌC. Mọi thao tác phải kèm giải thích.

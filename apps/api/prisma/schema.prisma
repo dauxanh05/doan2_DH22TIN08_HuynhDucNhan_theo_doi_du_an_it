@@ -26,6 +26,8 @@ model User {
   assignedTasks TaskAssignee[]
   comments      Comment[]
   notifications Notification[]
+  refreshTokens RefreshToken[]
+  activities    Activity[]
 }
 
 // ============== WORKSPACE (Multi-tenant) ==============
@@ -42,6 +44,7 @@ model Workspace {
   members     WorkspaceMember[]
   projects    Project[]
   invitations WorkspaceInvitation[]
+  activities  Activity[]
 }
 
 model WorkspaceMember {
@@ -174,6 +177,37 @@ model Notification {
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============== REFRESH TOKEN ==============
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+  device    String?
+  ip        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============== ACTIVITY LOG ==============
+
+model Activity {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ============== ENUMS ==============
