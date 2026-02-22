@@ -9,6 +9,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FilesModule } from './modules/files/files.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { FilesModule } from './modules/files/files.module';
       envFilePath: '.env',
     }),
     PrismaModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     WorkspacesModule,
