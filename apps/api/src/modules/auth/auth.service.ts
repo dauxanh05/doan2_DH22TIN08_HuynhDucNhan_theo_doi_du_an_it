@@ -125,4 +125,69 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  /**
+   * Refresh tokens using Refresh Token Rotation
+   * - Find matching token in DB (bcrypt compare)
+   * - Revoke old token, generate new pair
+   * - If no match found: possible token theft
+   */
+  async refresh(rawToken: string) {
+    // Find all active (non-revoked, non-expired) refresh tokens in DB
+    const activeTokens = await this.prisma.refreshToken.findMany({
+      where: {
+        revoked: false,
+        expiresAt: { gt: new Date() },
+      },
+      include: { user: true },
+    });
+
+    // Compare raw token with each hashed token using bcrypt
+    let matchedToken: (typeof activeTokens)[number] | null = null;
+    for (const dbToken of activeTokens) {
+      const isMatch = await bcrypt.compare(rawToken, dbToken.token);
+      if (isMatch) {
+        matchedToken = dbToken;
+        break;
+      }
+    }
+
+    // No valid token found - possible token theft
+    if (!matchedToken) {
+      throw new UnauthorizedException('Refresh token khong hop le');
+    }
+
+    // Revoke ALL tokens of this user (security: invalidate old sessions)
+    await this.prisma.refreshToken.updateMany({
+      where: { userId: matchedToken.userId, revoked: false },
+      data: { revoked: true },
+    });
+
+    // Generate new token pair
+    const tokens = await this.generateTokens(
+      matchedToken.userId,
+      matchedToken.user.email,
+    );
+
+    // Return new access token + user info (without password)
+    const { password, ...userWithoutPassword } = matchedToken.user;
+    return {
+      ...tokens,
+      user: userWithoutPassword,
+    };
+  }
+
+  /**
+   * Logout - revoke all refresh tokens for a user
+   * This invalidates all sessions across all devices
+   */
+  async logout(userId: string) {
+    // Revoke all active refresh tokens of this user
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, revoked: false },
+      data: { revoked: true },
+    });
+
+    return { message: 'Dang xuat thanh cong' };
+  }
 }
