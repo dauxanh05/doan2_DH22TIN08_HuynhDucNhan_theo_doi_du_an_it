@@ -14,7 +14,24 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Find user by email (safe - excludes password)
+   * Used by: register, verifyEmail, forgotPassword, resetPassword, googleLogin
+   */
   async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) return null;
+    const { password, ...result } = user;
+    return result;
+  }
+
+  /**
+   * Find user by email WITH password hash (only for login)
+   * WARNING: Only use when you need to verify password with bcrypt.compare()
+   */
+  async findByEmailWithPassword(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
 

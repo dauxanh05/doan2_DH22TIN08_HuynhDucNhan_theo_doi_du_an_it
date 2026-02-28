@@ -8,7 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
@@ -73,8 +73,8 @@ export class AuthService {
    * - Return tokens and user info
    */
   async login(email: string, password: string) {
-    // Find user by email
-    const user = await this.usersService.findByEmail(email);
+    // Find user WITH password (needed for bcrypt.compare)
+    const user = await this.usersService.findByEmailWithPassword(email);
 
     // If user not found or password is null (Google OAuth user)
     if (!user || !user.password) {
@@ -99,9 +99,18 @@ export class AuthService {
   }
 
   /**
+   * Hash a token using SHA-256 (fast, suitable for high-entropy tokens)
+   * Unlike bcrypt (slow, for passwords), refresh tokens are 128 hex chars
+   * with enough entropy that SHA-256 is secure and allows direct DB lookup.
+   */
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
+
+  /**
    * Generate access token (JWT) + refresh token (random string)
    * - Access token: JWT signed with secret, expires in 15m
-   * - Refresh token: random string, hashed and saved to DB, expires in 7 days
+   * - Refresh token: random string, SHA-256 hashed and saved to DB, expires in 7 days
    */
   private async generateTokens(userId: string, email: string) {
     // Build JWT payload
@@ -117,11 +126,11 @@ export class AuthService {
         this.configService.get<string>('JWT_EXPIRES_IN') || '15m',
     });
 
-    // Generate random refresh token
+    // Generate random refresh token (128 hex chars = 512 bits entropy)
     const refreshToken = randomBytes(64).toString('hex');
 
-    // Hash refresh token before saving to DB
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    // Hash with SHA-256 for direct DB lookup (O(1) instead of O(n) bcrypt compare)
+    const hashedRefreshToken = this.hashToken(refreshToken);
 
     // Calculate expiration date (7 days from now)
     const expiresAt = new Date();
@@ -141,32 +150,22 @@ export class AuthService {
 
   /**
    * Refresh tokens using Refresh Token Rotation
-   * - Find matching token in DB (bcrypt compare)
+   * - Hash raw token with SHA-256 and query DB directly (O(1) lookup)
    * - Revoke old token, generate new pair
    * - If no match found: possible token theft
    */
   async refresh(rawToken: string) {
-    // Find all active (non-revoked, non-expired) refresh tokens in DB
-    const activeTokens = await this.prisma.refreshToken.findMany({
-      where: {
-        revoked: false,
-        expiresAt: { gt: new Date() },
-      },
+    // Hash the raw token to look up directly in DB (O(1) instead of O(n))
+    const hashedToken = this.hashToken(rawToken);
+
+    // Find the exact token in DB
+    const matchedToken = await this.prisma.refreshToken.findUnique({
+      where: { token: hashedToken },
       include: { user: true },
     });
 
-    // Compare raw token with each hashed token using bcrypt
-    let matchedToken: (typeof activeTokens)[number] | null = null;
-    for (const dbToken of activeTokens) {
-      const isMatch = await bcrypt.compare(rawToken, dbToken.token);
-      if (isMatch) {
-        matchedToken = dbToken;
-        break;
-      }
-    }
-
-    // No valid token found - possible token theft
-    if (!matchedToken) {
+    // Validate: token must exist, not be revoked, and not be expired
+    if (!matchedToken || matchedToken.revoked || matchedToken.expiresAt < new Date()) {
       throw new UnauthorizedException('Refresh token khong hop le');
     }
 
@@ -309,7 +308,7 @@ export class AuthService {
   /**
    * Google OAuth login
    * - Find user by email
-   * - If exists with LOCAL provider: merge account (update to GOOGLE provider)
+   * - If exists with LOCAL provider: merge account (keep LOCAL provider, update providerId)
    * - If exists with GOOGLE provider: just generate tokens
    * - If not exists: create new user
    * - Return tokens + user info
@@ -324,17 +323,17 @@ export class AuthService {
 
     if (user) {
       // User exists with LOCAL provider -> merge account
-      if (user.provider === 'LOCAL') {
+      if (user.provider === 'LOCAL' && !user.providerId) {
         user = await this.prisma.user.update({
           where: { id: user.id },
           data: {
-            provider: 'GOOGLE',
+            // Keep provider as LOCAL, just save the providerId to link accounts
             providerId: googleUser.providerId,
             emailVerified: true,
           },
         });
       }
-      // If provider is GOOGLE, just continue to generate tokens
+      // If provider is GOOGLE, or LOCAL and already linked, continue to generate tokens
     } else {
       // New user -> create with GOOGLE provider
       user = await this.prisma.user.create({
@@ -354,7 +353,7 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.email);
 
     // Return tokens + user info (without password)
-    const { password, ...userWithoutPassword } = user;
+    const { password: _pw, ...userWithoutPassword } = user as any;
     return {
       ...tokens,
       user: userWithoutPassword,
