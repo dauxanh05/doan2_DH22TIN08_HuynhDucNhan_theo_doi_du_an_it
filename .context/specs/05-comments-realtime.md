@@ -234,4 +234,45 @@ notification      { notification }   // Thong bao moi
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+### Comments
+- [ ] Them comment trong task
+- [ ] Sua comment (chi nguoi viet)
+- [ ] Xoa comment (chi nguoi viet)
+- [ ] @mention hien thi autocomplete dropdown
+- [ ] @mention highlight mau xanh trong comment
+- [ ] @mention tao notification cho user duoc mention
+
+### Notifications
+- [ ] Xem danh sach notifications (paginated)
+- [ ] Danh dau da doc 1 notification
+- [ ] Doc tat ca notifications
+- [ ] Unread count badge hien thi dung
+- [ ] 7 loai notification tao dung theo event
+
+### WebSocket
+- [ ] Connect voi JWT authentication
+- [ ] Join workspace room
+- [ ] Nhan event task_created real-time
+- [ ] Nhan event task_updated real-time (Kanban card di chuyen)
+- [ ] Nhan event comment_added real-time
+- [ ] Nhan notification real-time
+- [ ] Reconnect khi mat ket noi
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint | Status | Response |
+|------|----------|--------|----------|
+| Comment rong | POST /tasks/:taskId/comments | 400 | `{ "message": "Content is required" }` |
+| Sua comment cua nguoi khac | PATCH /comments/:id | 403 | `{ "message": "You can only edit your own comments" }` |
+| Xoa comment cua nguoi khac | DELETE /comments/:id | 403 | `{ "message": "You can only delete your own comments" }` |
+| @mention user khong ton tai | POST /tasks/:taskId/comments | 200 | Tao comment binh thuong, bo qua mention khong hop le |
+| Task khong ton tai | POST /tasks/:taskId/comments | 404 | `{ "message": "Task not found" }` |
+| WebSocket token het han | Connection | - | Disconnect, frontend reconnect voi token moi |
+| WebSocket token invalid | Connection | - | Reject connection |
+| Notification pagination vuot qua | GET /notifications?page=999 | 200 | `{ "data": [], "total": 50 }` |
+
+---
+
+*Last updated: 2026-02-27*

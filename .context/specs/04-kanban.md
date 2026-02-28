@@ -158,4 +158,33 @@ POST   /projects/:projectId/tasks    # Quick add task
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+- [ ] Kanban hien thi 3 cot: TODO, IN_PROGRESS, DONE
+- [ ] Task card hien thi: title, priority badge, assignee avatars, due date
+- [ ] Keo task tu cot nay sang cot khac → update status
+- [ ] Keo task trong cung cot → update position
+- [ ] Filter theo assignee hoat dong
+- [ ] Filter theo priority hoat dong
+- [ ] Search theo ten task (debounce 300ms)
+- [ ] Ket hop 3 filters (AND logic)
+- [ ] Quick add task inline moi cot
+- [ ] Task overdue hien thi mau do
+- [ ] Task due hom nay hien thi mau vang
+- [ ] Click card → mo Task Detail Modal
+- [ ] Animation smooth khi drag-drop
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint/UI | Status | Response |
+|------|-------------|--------|----------|
+| Khong co tasks | UI | - | Hien empty state "Chua co task nao" |
+| Reorder fail (network error) | PATCH /tasks/reorder | 500 | Rollback vi tri card ve cho cu (optimistic update revert) |
+| Status update fail khi keo | PATCH /tasks/:id | 500 | Card quay ve cot cu, hien toast error |
+| Filter khong co ket qua | UI | - | Hien "Khong tim thay task phu hop" |
+| Task title qua dai | UI | - | Ellipsis sau 2 dong |
+| Nhieu nguoi keo cung task | WebSocket conflict | - | Last write wins, real-time update cho nguoi con lai |
+
+---
+
+*Last updated: 2026-02-27*

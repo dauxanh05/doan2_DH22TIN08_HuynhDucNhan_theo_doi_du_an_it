@@ -188,4 +188,30 @@ const data = [
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+- [ ] Dashboard stats API tra ve du lieu dung
+- [ ] Activity feed API tra ve 20 items/page, paginated
+- [ ] ProjectProgressWidget hien thi progress bar moi project
+- [ ] TasksStatusChart hien thi pie chart (TODO/IN_PROGRESS/DONE)
+- [ ] OverdueTasksWidget hien thi danh sach task qua han
+- [ ] RecentActivityWidget hien thi feed hoat dong
+- [ ] MemberWorkloadChart hien thi bar chart so task/member
+- [ ] Click project trong widget → navigate den project detail
+- [ ] Click task trong overdue widget → mo Task Detail Modal
+- [ ] Dashboard responsive tren mobile
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint/UI | Status | Response |
+|------|-------------|--------|----------|
+| Workspace khong co project | GET /workspaces/:id/dashboard/stats | 200 | `{ "projectsProgress": [], "tasksByStatus": { "TODO": 0, "IN_PROGRESS": 0, "DONE": 0 } }` |
+| Khong co overdue tasks | UI | - | Hien "Khong co task qua han" |
+| Khong co activity | GET /workspaces/:id/dashboard/activity | 200 | `{ "activities": [], "total": 0 }` |
+| Workspace chi co OWNER | UI | - | Workload chart hien thi 1 bar |
+| Nhieu projects (>20) | UI | - | Scroll trong widget, hoac "Xem tat ca" link |
+| Recharts khong load | UI | - | Fallback: hien thi so lieu dang text |
+
+---
+
+*Last updated: 2026-02-27*

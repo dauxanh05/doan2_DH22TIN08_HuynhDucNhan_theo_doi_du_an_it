@@ -299,4 +299,49 @@ Response: { instruction: "markdown content" }
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+### Project
+- [ ] Tao project trong workspace thanh cong
+- [ ] Xem danh sach projects
+- [ ] Cap nhat project (name, description, color, status)
+- [ ] Xoa project (va tat ca tasks ben trong)
+- [ ] Xem thong ke project (tong tasks, % hoan thanh)
+
+### Task
+- [ ] Tao task trong project
+- [ ] Xem danh sach tasks (filter, sort)
+- [ ] Cap nhat task (title, description, status, priority, dueDate)
+- [ ] Xoa task
+- [ ] Tao subtask (parentId != null)
+- [ ] Subtask khong the co subtask (max 2 levels)
+- [ ] Assign/unassign user vao task
+- [ ] Them/sua/xoa/toggle checklist item
+- [ ] Upload file attachment
+- [ ] Xoa file attachment (xoa file tren disk)
+- [ ] Reorder tasks (drag-drop update position)
+
+### AI
+- [ ] POST /ai/split-task tra ve danh sach subtasks goi y
+- [ ] POST /ai/analyze-progress tra ve bao cao + risks
+- [ ] POST /ai/suggest-assignee tra ve goi y nguoi
+- [ ] POST /ai/code-assist tra ve huong dan markdown
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint | Status | Response |
+|------|----------|--------|----------|
+| Project khong ton tai | GET /projects/:id | 404 | `{ "message": "Project not found" }` |
+| Task khong ton tai | GET /tasks/:id | 404 | `{ "message": "Task not found" }` |
+| Tao subtask cua subtask (level 3) | POST /tasks/:id/subtasks | 400 | `{ "message": "Maximum subtask depth is 2 levels" }` |
+| Assign user khong phai member | POST /tasks/:id/assignees | 400 | `{ "message": "User is not a workspace member" }` |
+| Upload file qua lon (>10MB) | POST /tasks/:id/attachments | 400 | `{ "message": "File too large" }` |
+| VIEWER tao task | POST /projects/:projectId/tasks | 403 | `{ "message": "Insufficient permissions" }` |
+| Xoa project cua workspace khac | DELETE /projects/:id | 403 | `{ "message": "Insufficient permissions" }` |
+| AI API khong phan hoi | POST /ai/* | 503 | `{ "message": "AI service unavailable" }` |
+| AI API timeout | POST /ai/* | 504 | `{ "message": "AI service timeout" }` |
+| Task description rong khi goi AI split | POST /ai/split-task | 400 | `{ "message": "Task description is required" }` |
+
+---
+
+*Last updated: 2026-02-27*

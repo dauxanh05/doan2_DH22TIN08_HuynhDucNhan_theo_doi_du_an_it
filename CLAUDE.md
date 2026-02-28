@@ -1,195 +1,66 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
-## Project Overview
+## Project
 
-DevTeamOS là webapp quản lý tiến độ dự án, target freelancers và startup teams (2-15 người). MVP sử dụng tiếng Việt only.
+DevTeamOS — webapp quan ly tien do du an cho freelancers va startup teams (2-15 nguoi). MVP tieng Viet only.
 
-## Commands
+## Context Files
 
-### Development
-```bash
-# Start all services (requires Docker for PostgreSQL)
-docker compose up -d              # Start database (port 5433)
-pnpm dev                          # Start both API and web in parallel
+> Tat ca context nam trong `.context/`. Doc file can thiet thay vi load het.
 
-# Start individual apps
-pnpm --filter api dev             # NestJS API on localhost:3000
-pnpm --filter web dev             # Vite frontend on localhost:5173
-```
+| File | Khi nao doc |
+|------|-------------|
+| `.context/STATE.md` | **DAU moi session** — biet dang o dau, lam gi tiep |
+| `.context/PROJECT.md` | Khi can hieu tong quan du an |
+| `.context/REQUIREMENTS.md` | Khi can biet requirement IDs (AUTH-01, WS-02...) |
+| `.context/ARCHITECTURE.md` | Khi code feature moi — patterns, DB schema |
+| `.context/COMMANDS.md` | Khi can chay lenh dev/build/test, env vars |
+| `.context/WORKFLOW.md` | Khi commit, merge, tao branch |
+| `.context/ROADMAP.md` | Khi review tien do tong the |
+| `.context/DECISIONS.md` | Khi can biet "tai sao chon X" |
+| `.context/LEARNING.md` | Rules cho Learning Mode |
+| `.context/specs/0X-*.md` | Khi code feature cu the |
+| `.context/branches/XX/CONTEXT.md` | Khi lam viec tren branch cu the |
+| `.context/research/STACK.md` | Tech stack + ly do chon |
+| `.context/research/PITFALLS.md` | Cam bay can tranh (NestJS, Prisma, React, Auth) |
+| `.context/research/CONVENTIONS.md` | Coding conventions (naming, imports, errors, API format) |
+| `.context/codebase/STRUCTURE.md` | File tree thuc te cua codebase |
+| `.context/codebase/CONVENTIONS.md` | Patterns dang dung trong code |
+| `.context/codebase/CONCERNS.md` | Technical debt tracking |
+| `.context/todos/` | Pending ideas (1 file/todo) |
+| `.context/debug/` | Debug sessions (1 file/session, hypothesis testing) |
 
-### Database (Prisma)
-```bash
-cd apps/api
-npx prisma generate               # Generate Prisma client
-npx prisma migrate dev            # Run migrations
-npx prisma studio                 # Open Prisma Studio GUI
-npx prisma db push                # Push schema changes (dev only)
-```
+## Agent Rules
 
-### Build & Test
-```bash
-pnpm build                        # Build all packages
-pnpm --filter api build           # Build API only
-pnpm --filter web build           # Build frontend only
-pnpm --filter api test            # Run API tests (Jest)
-pnpm --filter api test:watch      # Run tests in watch mode
-```
-
-## Architecture
-
-### Monorepo Structure
-- **pnpm workspaces** - No Turborepo, simple workspace setup
-- `apps/api` - NestJS backend with Prisma ORM
-- `apps/web` - React 18 + Vite frontend
-- `packages/shared` - Shared TypeScript types and constants
-
-### Backend (apps/api)
-- **NestJS** modular architecture: each domain in `src/modules/`
-- **PrismaService** (`src/prisma/`) - Global module, inject via constructor
-- **Guards** in `src/common/guards/` - JWT auth guards
-- **Decorators** in `src/common/decorators/` - Custom decorators (e.g., @CurrentUser)
-- API prefix: `/api`, Swagger docs: `/api/docs`
-
-### Frontend (apps/web)
-- **Feature-based structure**: `src/features/{auth,projects,kanban,dashboard}/`
-- **Zustand stores**: `src/stores/` - auth, theme, workspace state
-- **TanStack Query** for server state, **Axios** for API calls (`src/services/api.ts`)
-- **Layouts**: `AuthLayout` (public), `DashboardLayout` (protected)
-- Path alias: `@/` maps to `src/`
-
-### Database Models (Prisma)
-Key relationships:
-- User → WorkspaceMember → Workspace (multi-tenant)
-- Workspace → Project → Task (hierarchy)
-- Task → Task (self-referential for subtasks, 2 levels max)
-- Task → TaskAssignee, Comment, ChecklistItem, Attachment
-
-Fixed enums (no custom workflows for MVP):
-- `TaskStatus`: TODO, IN_PROGRESS, DONE
-- `Priority`: URGENT, HIGH, MEDIUM, LOW
-- `Role`: OWNER, ADMIN, MEMBER, VIEWER
+0. **Lan dau lam viec voi project nay? Doc `.context/ONBOARDING.md`** — huong dan doc context theo tung tinh huong
+1. **Doc `.context/STATE.md` DAU moi session** — hieu current position
+2. **Cap nhat `.context/STATE.md` CUOI moi session** — ghi lai da lam gi, tiep theo gi
+3. **Tuan thu Learning Mode** — giai thich tung buoc, hoi xac nhan (xem `.context/LEARNING.md`)
+4. Khi code branch: doc `.context/branches/XX/CONTEXT.md`
+5. Khi code feature: doc `.context/specs/0X-*.md`
+6. Ghi quyet dinh quan trong vao `.context/DECISIONS.md` (append-only)
+7. Cap nhat requirement status trong `.context/REQUIREMENTS.md` khi hoan thanh
 
 ## Key Patterns
 
-### NestJS Module Pattern
-Each module has: `*.module.ts`, `*.controller.ts`, `*.service.ts`
+### Backend (NestJS)
+- Module pattern: `*.module.ts`, `*.controller.ts`, `*.service.ts`
 - Controllers handle HTTP, delegate to services
 - Services inject PrismaService for database access
+- API prefix: `/api`, Swagger: `/api/docs`
 
-### Frontend State
-- **Auth**: Zustand with persist middleware (`auth.store.ts`)
-- **Server data**: TanStack Query hooks
-- **API client**: Axios instance with auth interceptor (`services/api.ts`)
+### Frontend (React)
+- Feature-based: `src/features/{name}/`
+- Zustand stores: `src/stores/`
+- TanStack Query for server state
+- Axios with auth interceptor: `src/services/api.ts`
+- Path alias: `@/` = `src/`
 
-### Styling
-- TailwindCSS with custom component classes in `index.css`
-- Dark mode via `class` strategy, controlled by `theme.store.ts`
-- Component utilities: `btn`, `btn-primary`, `input`, `card`
+## Commit Convention
 
-## Environment Variables
-
-### API (.env in apps/api)
-- `DATABASE_URL` - PostgreSQL connection (port 5433 for local Docker)
-- `JWT_SECRET`, `JWT_REFRESH_SECRET` - Token secrets
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - OAuth (configure later)
-- `SMTP_*` - Email settings (configure later)
-
-### Web (.env in apps/web)
-- `VITE_API_URL` - API base URL (default: http://localhost:3000/api)
-- `VITE_WS_URL` - WebSocket URL
-
-## Branch Workflow
-
-### Branch Strategy
-- **Main branch**: Planning & review only, KHÔNG code trực tiếp trên main.
-- **Merge flow tuần tự**: `00-chore-foundation` → `main` → `01-feat-auth-be` → `main` → ...
-
-### Branches
-| # | Branch | Scope |
-|---|--------|-------|
-| 00 | `00-chore-foundation` | Prisma schema, .env, Docker, Shared types, CLAUDE.md |
-| 01 | `01-feat-auth-be` | Register, Login, JWT, Refresh, Google OAuth, Email Verify, Forgot/Reset PW |
-| 02 | `02-feat-auth-fe` | LoginPage, RegisterPage, ForgotPW, auth.store, ProtectedRoute |
-| 03 | `03-feat-workspace-be` | Workspace CRUD, Members, Invitation, Role Guard |
-| 04 | `04-feat-workspace-fe` | WorkspaceList, Settings, Members, Switcher |
-| 05 | `05-feat-project-task-be` | Project + Task CRUD, Subtasks, Checklist, Attachments, File upload |
-| 06 | `06-feat-project-task-fe` | ProjectList, ProjectDetail, TaskDetailModal |
-| 07 | `07-feat-ai-be` | 4 AI endpoints (split-task, analyze, assign, code-assist) |
-| 08 | `08-feat-ai-fe` | 4 AI components |
-| 09 | `09-feat-kanban-fe` | KanbanBoard, @dnd-kit drag-drop, Reorder API |
-| 10 | `10-feat-realtime-be` | Comments, Notifications, WebSocket Gateway |
-| 11 | `11-feat-realtime-fe` | CommentSection, NotificationBell, socket.ts |
-| 12 | `12-feat-dashboard-be` | Stats API, Activity feed |
-| 13 | `13-feat-dashboard-fe` | 5 Widgets, Recharts |
-| 14 | `14-feat-polish` | Error handling, Loading, Responsive |
-| 15 | `15-chore-deploy` | Docker, Nginx, PM2, CI/CD |
-
-### Commit Message Convention
 Format: `type(scope): message`
 
-**Types:**
-- `feat` - Tính năng mới
-- `fix` - Sửa bug
-- `chore` - Config, setup, không ảnh hưởng logic
-- `refactor` - Tái cấu trúc code, không thay đổi behavior
-- `docs` - Tài liệu
-- `style` - Format code, không ảnh hưởng logic
-
-**Scopes:** `auth`, `workspace`, `project`, `task`, `ai`, `kanban`, `realtime`, `dashboard`, `prisma`, `shared`, `deploy`
-
-**Examples:**
-```
-feat(auth): add JWT refresh token rotation
-fix(task): correct subtask position ordering
-chore(prisma): add RefreshToken and Activity models
-```
-
-## Learning Mode (Chế độ học tập)
-
-> **QUAN TRỌNG**: Dự án này được thực hiện bởi người đang HỌC. Mọi thao tác phải kèm giải thích.
-
-### Nguyên tắc cốt lõi
-1. **KHÔNG làm một lèo nhiều** - Dừng lại sau mỗi file/function để user hiểu
-2. **Luôn hỏi trước khi làm** - Giải thích sẽ làm gì, tại sao, rồi chờ xác nhận
-3. **Giải thích vừa phải** - Giải thích concept chính, bỏ qua những thứ đơn giản
-4. **Liên kết với LEARNSTART.md** - Nhắc user đọc phần liên quan + giải thích tóm tắt
-
-### Quy trình làm việc
-Với MỖI task, tuân thủ flow:
-1. **Giải thích** - Task này là gì, cần làm những gì
-2. **Nhắc học** - Gợi ý đọc phần nào trong LEARNSTART.md (nếu có)
-3. **Hỏi xác nhận** - "Bạn sẵn sàng chưa?" trước khi bắt đầu
-4. **Làm từng bước** - Mỗi file/function là 1 bước, giải thích rồi chờ
-5. **Tóm tắt** - Sau mỗi bước, tóm tắt đã học được gì
-
-### Format giải thích
-- **Ngôn ngữ**: Tiếng Việt, giữ nguyên thuật ngữ tiếng Anh (controller, service, middleware...)
-- **Cấu trúc**: "Đây là gì" → "Tại sao cần" → "Cách hoạt động"
-- **Code comments**: Viết bằng tiếng Anh (chuẩn industry)
-
-### Ví dụ interaction
-```
-User: Tạo auth module
-
-Claude:
-📚 **Trước khi bắt đầu**, bạn nên đọc:
-- LEARNSTART.md > Phase 2 > JWT Authentication
-
-🎯 **Task này sẽ làm**:
-1. Tạo auth.module.ts - Module container
-2. Tạo auth.controller.ts - Xử lý /login, /register endpoints
-3. Tạo auth.service.ts - Logic đăng nhập, tạo JWT token
-
-**Bước 1**: Tạo auth.module.ts
-→ Module trong NestJS là container chứa các thành phần liên quan...
-
-Bạn sẵn sàng chưa? Tôi sẽ tạo file đầu tiên.
-```
-
-### Không được làm
-- ❌ Tạo nhiều file cùng lúc mà không giải thích
-- ❌ Dùng thuật ngữ mà không giải thích lần đầu
-- ❌ Skip bước "hỏi xác nhận"
-- ❌ Viết code dài mà không chia nhỏ giải thích
+Types: `feat`, `fix`, `chore`, `refactor`, `docs`, `style`
+Scopes: `auth`, `workspace`, `project`, `task`, `ai`, `kanban`, `realtime`, `dashboard`, `prisma`, `shared`, `deploy`

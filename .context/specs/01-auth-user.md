@@ -158,4 +158,48 @@ enum Theme {
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+- [ ] Register thanh cong voi email + password hop le
+- [ ] Register gui email verification
+- [ ] Login tra ve access token (body) + refresh token (cookie)
+- [ ] Refresh token rotation: token cu bi revoke, token moi hoat dong
+- [ ] Logout xoa refresh token DB + clear cookie
+- [ ] Google OAuth redirect + callback tao user moi
+- [ ] Google OAuth merge voi existing email account
+- [ ] Email verification link hoat dong, set emailVerified = true
+- [ ] Forgot password gui email voi reset link
+- [ ] Reset password voi valid token thanh cong
+- [ ] GET /users/me tra ve user info (khi co JWT)
+- [ ] PATCH /users/me cap nhat name, theme
+- [ ] PATCH /users/me/password doi password thanh cong
+- [ ] POST /users/me/avatar upload file thanh cong
+- [ ] Request khong co token → 401
+- [ ] @CurrentUser() decorator tra ve user object
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint | Status | Response |
+|------|----------|--------|----------|
+| Email da ton tai | POST /auth/register | 409 | `{ "message": "Email already exists" }` |
+| Email sai format | POST /auth/register | 400 | `{ "message": ["email must be an email"] }` |
+| Password qua ngan (<6) | POST /auth/register | 400 | `{ "message": ["password must be longer than or equal to 6 characters"] }` |
+| Email khong ton tai | POST /auth/login | 401 | `{ "message": "Invalid credentials" }` |
+| Password sai | POST /auth/login | 401 | `{ "message": "Invalid credentials" }` |
+| Refresh token het han | POST /auth/refresh | 401 | `{ "message": "Invalid refresh token" }` |
+| Refresh token da dung (replay) | POST /auth/refresh | 401 | `{ "message": "Invalid refresh token" }` |
+| Khong co cookie | POST /auth/refresh | 401 | `{ "message": "Refresh token not found" }` |
+| Email verify token het han | GET /auth/verify-email/:token | 400 | `{ "message": "Token expired" }` |
+| Email verify token sai | GET /auth/verify-email/:token | 400 | `{ "message": "Invalid token" }` |
+| Reset token het han (>1h) | POST /auth/reset-password | 400 | `{ "message": "Token expired" }` |
+| Reset token sai | POST /auth/reset-password | 400 | `{ "message": "Invalid token" }` |
+| Old password sai khi doi password | PATCH /users/me/password | 400 | `{ "message": "Current password is incorrect" }` |
+| File upload qua lon (>5MB) | POST /users/me/avatar | 400 | `{ "message": "File too large" }` |
+| File upload sai format (khong phai image) | POST /users/me/avatar | 400 | `{ "message": "Only image files are allowed" }` |
+| Google OAuth bi tu choi (user cancel) | GET /auth/google/callback | 302 | Redirect to frontend /login?error=cancelled |
+| JWT expired | Any protected route | 401 | `{ "message": "Unauthorized" }` |
+| JWT invalid/tampered | Any protected route | 401 | `{ "message": "Unauthorized" }` |
+
+---
+
+*Last updated: 2026-02-27*

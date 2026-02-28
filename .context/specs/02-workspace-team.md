@@ -172,4 +172,39 @@ enum Role {
 
 ---
 
-*Last updated: 2026-02-15*
+## Verification Checklist
+
+- [ ] Tao workspace thanh cong, user tro thanh OWNER
+- [ ] Xem danh sach workspaces cua user
+- [ ] Cap nhat workspace settings (OWNER, ADMIN)
+- [ ] Xoa workspace (OWNER only)
+- [ ] Xem danh sach members trong workspace
+- [ ] Moi member qua email, gui invitation link
+- [ ] Join workspace tu invitation link (co tai khoan)
+- [ ] Join workspace tu invitation link (chua co tai khoan → register → join)
+- [ ] Xoa member khoi workspace (OWNER, ADMIN)
+- [ ] Doi role member (OWNER, ADMIN)
+- [ ] VIEWER khong the tao/sua/xoa project/task
+- [ ] MEMBER khong the moi/xoa member
+- [ ] Workspace slug unique
+- [ ] Frontend WorkspaceSwitcher chuyen workspace dung
+
+## Edge Cases & Error Responses
+
+| Case | Endpoint | Status | Response |
+|------|----------|--------|----------|
+| Slug da ton tai | POST /workspaces | 409 | `{ "message": "Workspace slug already exists" }` |
+| Khong phai OWNER khi xoa | DELETE /workspaces/:id | 403 | `{ "message": "Only workspace owner can delete" }` |
+| Khong phai OWNER/ADMIN khi moi | POST /workspaces/:id/invite | 403 | `{ "message": "Insufficient permissions" }` |
+| Email da la member | POST /workspaces/:id/invite | 409 | `{ "message": "User is already a member" }` |
+| Email da duoc moi (pending) | POST /workspaces/:id/invite | 409 | `{ "message": "Invitation already sent" }` |
+| Invitation token het han (>7 ngay) | POST /workspaces/join/:token | 400 | `{ "message": "Invitation expired" }` |
+| Invitation token sai | POST /workspaces/join/:token | 404 | `{ "message": "Invitation not found" }` |
+| Xoa OWNER khoi workspace | DELETE /workspaces/:id/members/:userId | 403 | `{ "message": "Cannot remove workspace owner" }` |
+| Doi role cua OWNER | PATCH /workspaces/:id/members/:userId | 403 | `{ "message": "Cannot change owner role" }` |
+| User khong phai member | Any /workspaces/:id/* | 403 | `{ "message": "Not a member of this workspace" }` |
+| Workspace khong ton tai | GET /workspaces/:id | 404 | `{ "message": "Workspace not found" }` |
+
+---
+
+*Last updated: 2026-02-27*
