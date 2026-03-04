@@ -42,12 +42,16 @@ uploads/*
 *.tsbuildinfo
 
 # Personal/Learning files (không push lên repo)
-CLAUDE.md
 LEARNSTART.md
 AI_TASK_INSTRUCTION.md
 
-# Claude Code / AMP Code skills
-.claude/
+# Claude Code / AMP Code
+.claude/*
+!.claude/rules/
+!.claude/hooks/
+!.claude/skills/
+!.claude/settings.json
+.claude/audit.log
 .agents/
 memory/
 

@@ -28,6 +28,8 @@ Dua vao STATE.md, xac dinh dang lam gi:
 | Tinh huong | Doc them |
 |------------|----------|
 | Bat dau session moi, chua biet lam gi | `ROADMAP.md` — xem tien do tong the |
+| Lam T1 (Orchestrator — chi plan, dieu phoi) | `ORCHESTRATOR.md` — 3-tier workflow, chia task |
+| Lam T2/T3 (Chat phu — code theo prompt) | `branches/XX/PROMPT.md` + `branches/XX/CONTRACTS.md` |
 | Dang code tren 1 branch cu the | `branches/XX/CONTEXT.md` + `branches/XX/PLAN.md` |
 | Bat dau feature moi | `specs/0X-*.md` — spec chi tiet cua feature |
 | Can hieu architecture | `ARCHITECTURE.md` |
@@ -109,6 +111,7 @@ Truoc khi ket thuc session, cap nhat cac file sau:
 ├── ROADMAP.md          ○ Phases + progress
 ├── DECISIONS.md        ○ Decision log
 ├── LEARNING.md         ○ Learning mode rules
+├── ORCHESTRATOR.md     ★ Doc khi lam T1 (chat chinh)
 ├── ONBOARDING.md       ★ File nay — doc 1 lan
 │
 ├── research/           ◆ Nghien cuu, doc khi can
