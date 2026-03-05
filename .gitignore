@@ -50,10 +50,11 @@ AI_TASK_INSTRUCTION.md
 !.claude/rules/
 !.claude/hooks/
 !.claude/skills/
+!.claude/agents/
 !.claude/settings.json
 .claude/audit.log
 .agents/
 memory/
 
-# Branch agent docs (chi dung local, khong push)
-branches/
+# Branch agent docs (chi dung local, khong push — tru .context/branches/)
+/branches/

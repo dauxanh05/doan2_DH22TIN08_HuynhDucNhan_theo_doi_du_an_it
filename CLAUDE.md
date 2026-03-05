@@ -61,6 +61,26 @@ DevTeamOS — webapp quan ly tien do du an cho freelancers va startup teams (2-1
 | `prisma-patterns.md` | `*.prisma`, `apps/api/prisma/**` | Deep patterns: migrations, relations, queries, indexes |
 | `react-patterns.md` | `apps/web/**/*.ts,tsx` | Deep patterns: TanStack Query, Zustand, forms, error handling |
 
+## Custom Agents
+
+> `.claude/agents/` chua 4 agents customize cho DevTeamOS. Goi bang natural language.
+
+| Agent | Muc dich | Cach goi |
+|-------|----------|----------|
+| `devteam-reviewer` | Review code (4 goc: security, arch, perf, quality) | "Dung devteam-reviewer review [scope]" |
+| `devteam-tester` | Viet unit/integration tests | "Dung devteam-tester viet tests cho [file]" |
+| `devteam-arch-checker` | Check imports, schema, structure, circular deps | "Dung devteam-arch-checker verify [scope]" |
+| `devteam-doc-writer` | Update STATE.md, PROGRESS.md, REQUIREMENTS.md | "Dung devteam-doc-writer update docs" |
+
+## Hooks (tu dong)
+
+| Hook | Event | Lam gi |
+|------|-------|--------|
+| `pre-write-imports.sh` | PreToolUse (Write/Edit) | Check imports ton tai |
+| `post-write-format.sh` | PostToolUse (Write/Edit) | Prettier auto format |
+| `post-write-typecheck.sh` | PostToolUse (Write/Edit) | `tsc --noEmit` type check |
+| `post-bash-audit.sh` | PostToolUse (Bash) | Log commands vao audit.log |
+
 ## Installed Plugins (wshobson/agents marketplace)
 
 | Plugin | Commands | Khi nao dung |
