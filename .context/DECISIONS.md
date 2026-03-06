@@ -28,7 +28,10 @@
 | 2026-02-27 | Dot prefix .context/ | Hidden folder, khong lan voi source code. Tuong thich GSD .planning/ | ls -a de thay |
 | 2026-02-27 | STATE.md < 100 dong | GSD constraint: digest, khong phai archive. Doc nhanh biet dang o dau | Read first, write after |
 | 2026-02-27 | Requirement IDs (AUTH-01, WS-02...) | Tracking tu requirement -> phase -> branch -> code -> verify | 78 v1 + 10 v2 requirements |
+| 2026-03-06 | Google OAuth callback dung one-time code + CacheModule | Tranh dua access token vao URL, giam ro ri token qua logs/history/referrer | `GET /auth/google/callback?code=...` + `POST /auth/google/exchange` |
+| 2026-03-06 | Strict throttling cho auth endpoints | Giam brute force va abuse cho login/register/forgot-password ma van giu UX chap nhan duoc | Global 30/min + route-specific limits |
+| 2026-03-06 | Password reset dung `resetNonce` single-use | JWT reset token expiry alone khong du, can chan token reuse sau khi reset thanh cong | Token reset bi vo hieu hoa sau 1 lan dung |
 
 ---
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-03-06*

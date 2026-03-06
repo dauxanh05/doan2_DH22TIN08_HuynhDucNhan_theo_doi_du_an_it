@@ -19,6 +19,7 @@ model User {
   providerId    String?
   theme         Theme        @default(SYSTEM)
   emailVerified Boolean      @default(false)
+  resetNonce    String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -192,6 +193,9 @@ model RefreshToken {
   ip        String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revoked])
+  @@index([expiresAt])
 }
 
 // ============== ACTIVITY LOG ==============

@@ -12,6 +12,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Request, Response, CookieOptions } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
@@ -41,6 +42,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
@@ -54,14 +56,12 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(
-    @Body() dto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { accessToken, refreshToken, user } = await this.authService.login(
       dto.email,
       dto.password,
@@ -80,17 +80,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
   @ApiResponse({ status: 200, description: 'Tokens refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
-  async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
     const rawToken = request.cookies[REFRESH_COOKIE_NAME];
     if (!rawToken) {
       throw new UnauthorizedException('Refresh token khong ton tai');
     }
 
-    const { accessToken, refreshToken, user } =
-      await this.authService.refresh(rawToken);
+    const { accessToken, refreshToken, user } = await this.authService.refresh(rawToken);
 
     response.cookie(REFRESH_COOKIE_NAME, refreshToken, REFRESH_COOKIE_OPTIONS);
 
@@ -107,10 +103,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout and revoke all refresh tokens' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async logout(
-    @CurrentUser('id') userId: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async logout(@CurrentUser('id') userId: string, @Res({ passthrough: true }) response: Response) {
     const result = await this.authService.logout(userId);
 
     response.clearCookie(REFRESH_COOKIE_NAME, {
@@ -129,6 +122,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Send password reset email' })
   @ApiResponse({ status: 200, description: 'Reset email sent if account exists' })
@@ -156,17 +150,26 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'Google OAuth callback' })
-  @ApiResponse({ status: 302, description: 'Redirect to frontend with token' })
-  async googleCallback(
-    @Req() req: Request,
-    @Res() response: Response,
-  ) {
-    const { accessToken, refreshToken } =
-      await this.authService.googleLogin(req.user as any);
+  @ApiResponse({ status: 302, description: 'Redirect to frontend with one-time code' })
+  async googleCallback(@Req() req: Request, @Res() response: Response) {
+    const { code, refreshToken } = await this.authService.googleLogin(req.user as any);
 
     response.cookie(REFRESH_COOKIE_NAME, refreshToken, REFRESH_COOKIE_OPTIONS);
 
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    response.redirect(`${frontendUrl}/auth/google/callback?token=${accessToken}`);
+    response.redirect(`${frontendUrl}/auth/google/callback?code=${code}`);
+  }
+
+  @Post('google/exchange')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Exchange one-time Google auth code for access token' })
+  @ApiResponse({ status: 200, description: 'Access token issued successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or expired code' })
+  async exchangeGoogleCode(@Body('code') code: string) {
+    if (!code) {
+      throw new UnauthorizedException('Ma dang nhap Google khong ton tai');
+    }
+
+    return this.authService.exchangeGoogleAuthCode(code);
   }
 }

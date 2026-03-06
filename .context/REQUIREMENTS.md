@@ -9,19 +9,19 @@
 
 ### Authentication & User (AUTH)
 
-- [~] **AUTH-01**: User dang ky bang email va password
-- [~] **AUTH-02**: User dang nhap bang email/password, nhan access token + refresh token cookie
-- [~] **AUTH-03**: Refresh token rotation (DB + HTTP-only cookie, 7 ngay)
-- [~] **AUTH-04**: Logout xoa refresh token trong DB + clear cookie
-- [~] **AUTH-05**: Dang nhap bang Google OAuth (tao tai khoan tu dong neu chua co)
-- [~] **AUTH-06**: Email verification sau khi dang ky
-- [~] **AUTH-07**: Forgot password gui email reset link
-- [~] **AUTH-08**: Reset password bang token
-- [ ] **AUTH-09**: Xem va cap nhat profile (name, avatar, theme)
-- [ ] **AUTH-10**: Doi mat khau
-- [ ] **AUTH-11**: Upload avatar
-- [ ] **AUTH-12**: JWT auth guard bao ve tat ca protected routes
-- [ ] **AUTH-13**: @CurrentUser decorator lay thong tin user hien tai
+- [x] **AUTH-01**: User dang ky bang email va password
+- [x] **AUTH-02**: User dang nhap bang email/password, nhan access token + refresh token cookie
+- [x] **AUTH-03**: Refresh token rotation (DB + HTTP-only cookie, 7 ngay)
+- [x] **AUTH-04**: Logout xoa refresh token trong DB + clear cookie
+- [x] **AUTH-05**: Dang nhap bang Google OAuth (tao tai khoan tu dong neu chua co)
+- [x] **AUTH-06**: Email verification sau khi dang ky
+- [x] **AUTH-07**: Forgot password gui email reset link
+- [x] **AUTH-08**: Reset password bang token
+- [x] **AUTH-09**: Xem va cap nhat profile (name, avatar, theme)
+- [x] **AUTH-10**: Doi mat khau
+- [x] **AUTH-11**: Upload avatar
+- [x] **AUTH-12**: JWT auth guard bao ve tat ca protected routes
+- [x] **AUTH-13**: @CurrentUser decorator lay thong tin user hien tai
 
 ### Workspace & Team (WS)
 
@@ -155,9 +155,8 @@
 
 | Requirement | Phase | Branch | Status |
 |-------------|-------|--------|--------|
-| AUTH-01..08 | Phase 1 | `01-feat-auth-be` | Dang lam |
-| AUTH-09..13 | Phase 1 | `01-feat-auth-be` | Chua lam |
-| AUTH (FE) | Phase 1 | `02-feat-auth-fe` | Chua lam |
+| AUTH-01..13 | Phase 1 | `01-feat-auth-be` | Hoan thanh |
+| AUTH (FE) | Phase 1 | `02-feat-auth-fe` | Dang lam |
 | WS-01..14 | Phase 2 | `03-feat-workspace-be`, `04-feat-workspace-fe` | Chua lam |
 | PROJ-01..07 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
 | TASK-01..11 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
@@ -172,4 +171,4 @@
 
 ---
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-03-06*

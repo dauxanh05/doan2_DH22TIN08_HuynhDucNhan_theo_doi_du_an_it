@@ -1,14 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+
+const UPLOADS_URL_PREFIX = '/uploads/';
 
 @Injectable()
 export class UsersService {
@@ -100,9 +98,7 @@ export class UsersService {
 
     // Google OAuth users don't have a password
     if (!user.password) {
-      throw new BadRequestException(
-        'Tai khoan Google khong co mat khau',
-      );
+      throw new BadRequestException('Tai khoan Google khong co mat khau');
     }
 
     // Verify current password
@@ -132,10 +128,12 @@ export class UsersService {
     });
 
     // Delete old avatar file if exists
-    if (user?.avatar) {
-      const uploadDir = process.env.UPLOAD_DIR || './uploads';
-      const oldPath = path.join(uploadDir, user.avatar.replace('/uploads/', ''));
-      if (fs.existsSync(oldPath)) {
+    if (user?.avatar?.startsWith(UPLOADS_URL_PREFIX)) {
+      const uploadDir = path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads');
+      const relativeAvatarPath = user.avatar.slice(UPLOADS_URL_PREFIX.length);
+      const oldPath = path.resolve(uploadDir, relativeAvatarPath);
+
+      if (oldPath.startsWith(`${uploadDir}${path.sep}`) && fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
     }

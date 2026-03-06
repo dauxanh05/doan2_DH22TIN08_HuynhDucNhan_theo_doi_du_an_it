@@ -4,16 +4,22 @@ import {
   UnauthorizedException,
   BadRequestException,
   Logger,
+  Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { randomBytes, createHash } from 'crypto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+
+const REFRESH_TOKEN_TTL_DAYS = 7;
+const GOOGLE_AUTH_CODE_TTL_MS = 60_000;
 
 @Injectable()
 export class AuthService {
@@ -25,6 +31,7 @@ export class AuthService {
     private configService: ConfigService,
     private usersService: UsersService,
     private emailService: EmailService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -78,24 +85,16 @@ export class AuthService {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  private async generateTokens(userId: string, email: string) {
-    const payload: JwtPayload = {
-      sub: userId,
-      email,
-      type: 'access',
-    };
+  private createResetNonce(): string {
+    return randomBytes(32).toString('hex');
+  }
 
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn:
-        this.configService.get<string>('JWT_EXPIRES_IN') || '15m',
-    });
-
+  private async createRefreshTokenRecord(userId: string) {
     const refreshToken = randomBytes(64).toString('hex');
-
     const hashedRefreshToken = this.hashToken(refreshToken);
 
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_TTL_DAYS);
 
     await this.prisma.refreshToken.create({
       data: {
@@ -105,36 +104,132 @@ export class AuthService {
       },
     });
 
+    return refreshToken;
+  }
+
+  private async cleanupRefreshTokens(userId: string) {
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+        OR: [{ revoked: true }, { expiresAt: { lt: new Date() } }],
+      },
+    });
+  }
+
+  private async storeGoogleAuthCode(userId: string, email: string) {
+    const code = randomBytes(32).toString('hex');
+    const accessToken = this.jwtService.sign(
+      {
+        sub: userId,
+        email,
+        type: 'access',
+      },
+      {
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '15m',
+      },
+    );
+
+    await this.cacheManager.set(`google-auth-code:${code}`, accessToken, GOOGLE_AUTH_CODE_TTL_MS);
+
+    return code;
+  }
+
+  private async consumeGoogleAuthCode(code: string) {
+    const cacheKey = `google-auth-code:${code}`;
+    const accessToken = await this.cacheManager.get<string>(cacheKey);
+
+    if (!accessToken) {
+      throw new UnauthorizedException('Ma dang nhap Google khong hop le hoac da het han');
+    }
+
+    await this.cacheManager.del(cacheKey);
+
+    return { accessToken };
+  }
+
+  private async generateTokens(userId: string, email: string) {
+    const payload: JwtPayload = {
+      sub: userId,
+      email,
+      type: 'access',
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '15m',
+    });
+
+    const refreshToken = await this.createRefreshTokenRecord(userId);
+
     return { accessToken, refreshToken };
   }
 
   async refresh(rawToken: string) {
     const hashedToken = this.hashToken(rawToken);
 
-    const matchedToken = await this.prisma.refreshToken.findUnique({
-      where: { token: hashedToken },
-      include: { user: true },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const matchedToken = await tx.refreshToken.findUnique({
+        where: { token: hashedToken },
+        include: { user: true },
+      });
+
+      if (!matchedToken || matchedToken.revoked || matchedToken.expiresAt < new Date()) {
+        throw new UnauthorizedException('Refresh token khong hop le');
+      }
+
+      const revokeResult = await tx.refreshToken.updateMany({
+        where: {
+          id: matchedToken.id,
+          revoked: false,
+          expiresAt: { gte: new Date() },
+        },
+        data: { revoked: true },
+      });
+
+      if (revokeResult.count !== 1) {
+        throw new UnauthorizedException('Refresh token khong hop le');
+      }
+
+      await tx.refreshToken.deleteMany({
+        where: {
+          userId: matchedToken.userId,
+          OR: [{ revoked: true }, { expiresAt: { lt: new Date() } }],
+        },
+      });
+
+      const newRefreshToken = randomBytes(64).toString('hex');
+      const hashedRefreshToken = this.hashToken(newRefreshToken);
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_TTL_DAYS);
+
+      await tx.refreshToken.create({
+        data: {
+          userId: matchedToken.userId,
+          token: hashedRefreshToken,
+          expiresAt,
+        },
+      });
+
+      const accessToken = this.jwtService.sign(
+        {
+          sub: matchedToken.userId,
+          email: matchedToken.user.email,
+          type: 'access',
+        },
+        {
+          expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '15m',
+        },
+      );
+
+      const { password: _pw, ...userWithoutPassword } = matchedToken.user;
+
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+        user: userWithoutPassword,
+      };
     });
 
-    if (!matchedToken || matchedToken.revoked || matchedToken.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token khong hop le');
-    }
-
-    await this.prisma.refreshToken.updateMany({
-      where: { userId: matchedToken.userId, revoked: false },
-      data: { revoked: true },
-    });
-
-    const tokens = await this.generateTokens(
-      matchedToken.userId,
-      matchedToken.user.email,
-    );
-
-    const { password: _pw, ...userWithoutPassword } = matchedToken.user;
-    return {
-      ...tokens,
-      user: userWithoutPassword,
-    };
+    return result;
   }
 
   async logout(userId: string) {
@@ -142,6 +237,7 @@ export class AuthService {
       where: { userId, revoked: false },
       data: { revoked: true },
     });
+    await this.cleanupRefreshTokens(userId);
 
     return { message: 'Dang xuat thanh cong' };
   }
@@ -204,9 +300,15 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (user) {
+      const resetNonce = this.createResetNonce();
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { resetNonce },
+      });
+
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       const token = this.jwtService.sign(
-        { email, type: 'reset-password' },
+        { email, type: 'reset-password', nonce: resetNonce },
         { secret: `${jwtSecret}_reset`, expiresIn: '1h' },
       );
 
@@ -271,12 +373,18 @@ export class AuthService {
       user = rest;
     }
 
-    const tokens = await this.generateTokens(user.id, user.email);
+    const refreshToken = await this.createRefreshTokenRecord(user.id);
+    const code = await this.storeGoogleAuthCode(user.id, user.email);
 
     return {
-      ...tokens,
+      code,
+      refreshToken,
       user,
     };
+  }
+
+  async exchangeGoogleAuthCode(code: string) {
+    return this.consumeGoogleAuthCode(code);
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -291,26 +399,36 @@ export class AuthService {
       throw new BadRequestException('Token khong hop le hoac da het han');
     }
 
-    if (payload.type !== 'reset-password') {
+    if (payload.type !== 'reset-password' || !payload.nonce) {
       throw new BadRequestException('Token khong hop le');
     }
 
-    const user = await this.usersService.findByEmail(payload.email);
-    if (!user) {
-      throw new BadRequestException('User khong ton tai');
+    const user = await this.prisma.user.findUnique({
+      where: { email: payload.email },
+      select: {
+        id: true,
+        resetNonce: true,
+      },
+    });
+    if (!user || !user.resetNonce || user.resetNonce !== payload.nonce) {
+      throw new BadRequestException('Token khong hop le');
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword },
+      data: {
+        password: hashedPassword,
+        resetNonce: null,
+      },
     });
 
     await this.prisma.refreshToken.updateMany({
       where: { userId: user.id, revoked: false },
       data: { revoked: true },
     });
+    await this.cleanupRefreshTokens(user.id);
 
     return { message: 'Mat khau da duoc dat lai' };
   }

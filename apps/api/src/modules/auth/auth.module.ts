@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
+    CacheModule.register({ ttl: 5 * 60 * 1000, max: 1000 }),
     // Register Passport with default strategy 'jwt'
     PassportModule.register({ defaultStrategy: 'jwt' }),
 
