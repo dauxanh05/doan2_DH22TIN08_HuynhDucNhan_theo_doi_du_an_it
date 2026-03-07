@@ -11,8 +11,8 @@
 |------------|--------------------|
 | Session moi | `STATE.md` → `ROADMAP.md` (neu can biet tong quan) |
 | Plan / thao luan | `STATE.md` → `PROJECT.md` → `REQUIREMENTS.md` → `ROADMAP.md` → `DECISIONS.md` |
-| Code tren branch | `STATE.md` → `branches/XX/CONTEXT.md` → `branches/XX/PLAN.md` → `branches/XX/TODO.md` → `specs/0X-*.md` |
-| Review / verify | `STATE.md` → `branches/XX/VERIFICATION.md` → `specs/0X-*.md` → `REQUIREMENTS.md` |
+| Code tren branch | `STATE.md` → `branches/XX/CONTEXT.md` → `branches/XX/PROMPTS.md` → `branches/XX/state.json` → `specs/0X-*.md` |
+| Review / verify | `STATE.md` → `branches/XX/PROGRESS.md` → `specs/0X-*.md` → `REQUIREMENTS.md` |
 | Debug | `STATE.md` → `research/PITFALLS.md` → `codebase/STRUCTURE.md` → `codebase/CONVENTIONS.md` |
 
 ---
@@ -45,7 +45,11 @@ File nay cho biet:
 | Workflow branch / commit / merge | `WORKFLOW.md` |
 | Quy trinh dieu phoi T1 | `ORCHESTRATOR.md` |
 | Scope va rules cua 1 branch cu the | `branches/XX/CONTEXT.md` |
-| Ke hoach thuc thi cua branch | `branches/XX/PLAN.md` |
+| Prompts cho T2 tabs lam viec | `branches/XX/PROMPTS.md` |
+| Tien do chi tiet cua branch | `branches/XX/PROGRESS.md` |
+| Trang thai resume session (phase, tasks) | `branches/XX/state.json` |
+| Interfaces/types/contracts bat buoc | `branches/XX/CONTRACTS.md` |
+| Sub-prompts tung phase cho T3 | `branches/XX/phases/NN-ten.md` |
 | Cau truc code thuc te | `codebase/STRUCTURE.md` |
 | Coding conventions / pitfalls | `research/CONVENTIONS.md`, `research/PITFALLS.md` |
 
@@ -59,8 +63,8 @@ Dua vao STATE.md, xac dinh dang lam gi:
 |------------|----------|
 | Bat dau session moi, chua biet lam gi | `ROADMAP.md` — xem tien do tong the |
 | Lam T1 (Orchestrator — chi plan, dieu phoi) | `ORCHESTRATOR.md` — 3-tier workflow, chia task |
-| Lam T2/T3 (Chat phu — code theo prompt) | `branches/XX/PROMPT.md` + `branches/XX/CONTRACTS.md` |
-| Dang code tren 1 branch cu the | `branches/XX/CONTEXT.md` + `branches/XX/PLAN.md` |
+| Lam T2/T3 (Chat phu — code theo prompt) | `branches/XX/PROMPTS.md` + `branches/XX/CONTRACTS.md` |
+| Dang code tren 1 branch cu the | `branches/XX/CONTEXT.md` + `branches/XX/state.json` |
 | Bat dau feature moi | `specs/0X-*.md` — spec chi tiet cua feature |
 | Can hieu architecture | `ARCHITECTURE.md` |
 | Can chay lenh | `COMMANDS.md` |
@@ -76,19 +80,20 @@ Dua vao STATE.md, xac dinh dang lam gi:
 
 ```
 1. .context/branches/XX/CONTEXT.md     ← scope, decisions, rules
-2. .context/branches/XX/PLAN.md        ← execution plan, tasks
-3. .context/branches/XX/TODO.md        ← checklist
-4. .context/specs/0X-*.md              ← spec chi tiet (neu can)
-5. .context/research/PITFALLS.md       ← cam bay can tranh
-6. .context/research/CONVENTIONS.md    ← coding conventions
+2. .context/branches/XX/PROMPTS.md     ← T1/T2/T3 prompts + task breakdown
+3. .context/branches/XX/CONTRACTS.md   ← interfaces, imports, patterns bat buoc
+4. .context/branches/XX/state.json     ← resume state: phase, completed tasks
+5. .context/specs/0X-*.md              ← spec chi tiet (neu can)
+6. .context/research/PITFALLS.md       ← cam bay can tranh
+7. .context/research/CONVENTIONS.md    ← coding conventions
 ```
 
 ### Neu dang REVIEW / VERIFY:
 
 ```
-1. .context/branches/XX/VERIFICATION.md  ← checklist verify
-2. .context/specs/0X-*.md > Edge Cases   ← error scenarios
-3. .context/REQUIREMENTS.md              ← cap nhat status
+1. .context/branches/XX/PROGRESS.md    ← da lam gi, issues phat hien
+2. .context/specs/0X-*.md > Edge Cases ← error scenarios
+3. .context/REQUIREMENTS.md            ← cap nhat status
 ```
 
 ### Neu dang DEBUG:
@@ -120,8 +125,8 @@ Truoc khi ket thuc session, cap nhat cac file sau:
 | `STATE.md` | Current position, last activity, session log |
 | `REQUIREMENTS.md` | Danh dau [x] requirements da hoan thanh |
 | `ROADMAP.md` | Cap nhat % tien do |
-| `branches/XX/PROGRESS.md` | Ghi da lam gi |
-| `branches/XX/VERIFICATION.md` | Danh dau test results |
+| `branches/XX/PROGRESS.md` | Ghi da lam gi (format structured: Task, Status, Files, Issues) |
+| `branches/XX/state.json` | Phase hien tai, completed_tasks, blockers |
 | `DECISIONS.md` | Append quyet dinh moi (neu co) |
 | `codebase/STRUCTURE.md` | Cap nhat neu tao files/folders moi |
 | `codebase/CONCERNS.md` | Ghi technical debt moi phat hien |
@@ -161,9 +166,14 @@ Truoc khi ket thuc session, cap nhat cac file sau:
 │
 ├── branches/           ◆ Branch context, doc khi code branch
 │   ├── README.md
-│   ├── _TEMPLATE/
-│   ├── XX-*/
-│   └── XX/
+│   ├── _TEMPLATE/      ← Mau files: CONTEXT, CONTRACTS, PLAN, PROGRESS, etc.
+│   └── XX-*/
+│       ├── CONTEXT.md    ← scope, rules, decisions
+│       ├── CONTRACTS.md  ← interfaces, imports, patterns bat buoc
+│       ├── PROMPTS.md    ← T1/T2/T3 prompts + task breakdown
+│       ├── PROGRESS.md   ← structured progress log
+│       ├── state.json    ← resume state (phase, tasks, blockers)
+│       └── phases/       ← sub-prompts cho T3 (NN-ten-task.md)
 │
 ├── todos/              ◇ Quick ideas / pending items
 └── debug/              ◇ Debug sessions / hypothesis logs
@@ -175,8 +185,9 @@ Truoc khi ket thuc session, cap nhat cac file sau:
 
 - `CHEATSHEET.md` nghieng ve thao tac nhanh / workflow, khong thay the `STATE.md`.
 - `specs/overview.md` la overview cua phan specs / project scope, **khong** phai index chinh cua toan bo `.context/`.
-- `branches/_TEMPLATE/` chua cac mau file cho branch context moi.
-- Trong `branches/` hien co the ton tai song song dang ten `XX-*/` va `XX/`; can doc dung folder branch dang duoc su dung.
+- `branches/_TEMPLATE/` chua cac mau file cho branch context moi (CONTEXT, CONTRACTS, PLAN, PROGRESS, TODO, VERIFICATION, REVIEW).
+- Pattern thuc te (tu branch 02): dung `PROMPTS.md` + `phases/` + `state.json` thay vi `PLAN.md` + `TODO.md` + `VERIFICATION.md`.
+- `branches/XX/` (folder khong co suffix) la folder lam viec thuc te; `branches/XX-type-name/` la folder context co the ton tai song song.
 
 ---
 
@@ -198,4 +209,4 @@ Truoc khi ket thuc session, cap nhat cac file sau:
 
 ---
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-03-07*
