@@ -4,47 +4,41 @@
 
 See: .context/PROJECT.md
 **Core value:** UX/UI xuat sac + AI features tich hop
-**Current focus:** Phase 1 - Auth & User
+**Current focus:** Phase 2 - Workspace & Team backend
 
 ## Current Position
 
-Phase: 1 of 7 (Auth & User)
-Branch: `02-feat-auth-fe`
-Status: Frontend auth DONE — 5 phases hoan thanh, san sang commit + merge
-Last activity: 2026-03-07 — Hoan thanh toan bo auth frontend (login, register, forgot/reset password, verify email, profile, change password)
-Progress: [########____________] 40%
+Phase: 2 of 7 (Workspace & Team)
+Branch: `03-feat-workspace-be`
+Status: Workspace backend implemented, blocker fixed, ready for commit review
+Last activity: 2026-03-08 — Fix invite-token email binding flaw, rebuild pass, branch 03 san sang commit review
+Progress: [##########__________] 50%
 
-## What's Done (Phase 1 BE)
+## What's Done (Phase 2 BE — branch 03)
 
-- Register + Login + JWT
-- Refresh token rotation + Logout (SHA-256 O(1) lookup)
-- Email verification + Password reset (separate JWT secrets)
-- Google OAuth login + account merging (keep LOCAL provider)
-- Users module: profile CRUD, change password, avatar upload
-- Code review: 11 security/performance/maintainability issues fixed
-- Auth hardening: path traversal fix, global + route auth throttling, single-use reset token nonce
-- Google OAuth token-in-URL removed: redirect one-time code + backend exchange endpoint
-- Refresh token cleanup + refresh rotation transaction + DB indexes applied via Prisma migration
+- DTOs: create/update workspace, invite member, update member role
+- WorkspaceRoles decorator + WorkspaceRoleGuard
+- Workspace CRUD: create, list, detail, update, delete
+- Members & invitation: list members, invite, remove, update role, join by token
+- Route protection: JwtAuthGuard + workspace membership/role checks
+- Build verification: `tsc --noEmit` + `nest build` pass
+- Manual verification: Postman smoke test pass
 
-## What's Done (Phase 1 FE — branch 02)
+## Open Review Findings
 
-- Auth store (Zustand + persist, isHydrated, no accessToken persist)
-- API interceptor (auto refresh, failedQueue, withCredentials)
-- TanStack Query hooks: useLogin, useRegister, useLogout, useCurrentUser, useForgotPassword, useResetPassword, useVerifyEmail, useUpdateProfile, useChangePassword
-- Route guards: ProtectedRoute, PublicRoute (isHydrated flash prevention)
-- Pages: LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage, VerifyEmailPage, ProfilePage, ChangePasswordPage
-- GoogleLoginButton component
-- App.tsx routing: all auth routes wired
+- Fixed: `joinByToken()` nay da verify `currentUser.email === invitation.email` truoc khi join workspace
+- Warning: invite het han van chan re-invite do check duplicate invitation khong xet `expiresAt`
+- Warning: create/update slug chua map Prisma `P2002` conflict khi concurrent request
 
 ## What's Next
 
-1. Commit branch 02-feat-auth-fe
-2. Merge 02 vao main
-3. Tiep tuc branch 03 (Workspace + Project management)
+1. Review diff va commit branch 03
+2. Re-test invite + join flow neu muon confirm manual sau fix blocker
+3. Sau do tiep tuc branch 04 (workspace frontend) hoac merge flow theo workflow
 
 ## Blockers/Concerns
 
-- None — branch 02 san sang commit
+- Khong con blocker merge-level; con 2 warning nho nen theo doi o buoc refactor/hardening tiep theo
 
 ## Accumulated Decisions
 
@@ -53,36 +47,20 @@ Progress: [########____________] 40%
 - Refresh token: Database + Cookie (2026-02-15)
 - 4 AI Features tich hop vao MVP (2026-02-15)
 - Auth hardening session: NestJS CacheModule cho Google one-time code exchange + strict throttling (2026-03-06)
+- Workspace backend branch 03 implemented before frontend branch 04 (2026-03-08)
 
 ## Session Log
 
-### 2026-03-07
+### 2026-03-08
 
-- Fix Phase 3 critical issues: extract useVerifyEmail hook, fix infinite spinner, fix silent fail
-- Phase 4: ProfilePage + ChangePasswordPage (useUpdateProfile, useChangePassword hooks)
-- Phase 5: Integrate all pages vao App.tsx, run arch-checker + reviewer
-- All phases DONE, san sang commit
-
-### 2026-03-06
-
-- Review + fix 7 auth security issues sau debug session
-- Fix path traversal trong avatar deletion
-- Them global throttling va route-specific limits cho register/login/forgot-password
-- Password reset token thanh single-use voi `resetNonce`
-- Google OAuth redirect doi tu token URL sang one-time code + exchange endpoint
-- Refresh token cleanup, transaction-based rotation, them indexes `userId+revoked` va `expiresAt`
-- Tao va apply Prisma migration `20260306104557_auth_security_fixes`
-- Prisma generate + `nest build` pass; auth regression tests dang duoc bo sung
-
-### 2026-02-28
-
-- Code review toan bo branch 01: phat hien 11 issues (security, performance, maintainability)
-- Fix 11 issues qua 6 tabs + dispatcher (SHA-256 refresh, JWT secret separation, cookie DRY, etc.)
-- Build passes clean
-- Cap nhat PROGRESS.md + STATE.md
-- Branch 01 hoan thanh, san sang merge
+- Implement Phase 1: workspace DTOs, WorkspaceRoles decorator, WorkspaceRoleGuard
+- Implement Phase 2: workspace CRUD service + controller endpoints
+- Implement Phase 3: members/invitation service + controller endpoints
+- Build passes clean; Postman workspace flow tested OK
+- Final review found invite token authorization flaw, da fix bang email-binding check trong `joinByToken()`
+- Rebuild sau fix: `nest build` pass; branch 03 ready for commit review
 
 ---
 
 *This file must stay under 100 lines. Move old entries to archive when needed.*
-*Last updated: 2026-03-07*
+*Last updated: 2026-03-08*

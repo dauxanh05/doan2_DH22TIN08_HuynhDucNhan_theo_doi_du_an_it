@@ -25,17 +25,17 @@
 
 ### Workspace & Team (WS)
 
-- [ ] **WS-01**: Tao workspace (user tro thanh OWNER)
-- [ ] **WS-02**: Xem danh sach workspaces cua user
-- [ ] **WS-03**: Cap nhat workspace settings (OWNER, ADMIN)
-- [ ] **WS-04**: Xoa workspace (OWNER only)
-- [ ] **WS-05**: Xem danh sach members
-- [ ] **WS-06**: Moi member qua email (gui invitation link, het han 7 ngay)
-- [ ] **WS-07**: Join workspace tu invitation link
-- [ ] **WS-08**: Xoa member khoi workspace (OWNER, ADMIN)
-- [ ] **WS-09**: Doi role member (OWNER, ADMIN)
-- [ ] **WS-10**: Phan quyen 4 roles: OWNER, ADMIN, MEMBER, VIEWER
-- [ ] **WS-11**: Workspace role guard kiem tra quyen truoc moi action
+- [x] **WS-01**: Tao workspace (user tro thanh OWNER)
+- [x] **WS-02**: Xem danh sach workspaces cua user
+- [x] **WS-03**: Cap nhat workspace settings (OWNER, ADMIN)
+- [x] **WS-04**: Xoa workspace (OWNER only)
+- [x] **WS-05**: Xem danh sach members
+- [x] **WS-06**: Moi member qua email (gui invitation link, het han 7 ngay)
+- [x] **WS-07**: Join workspace tu invitation link
+- [x] **WS-08**: Xoa member khoi workspace (OWNER, ADMIN)
+- [x] **WS-09**: Doi role member (OWNER, ADMIN)
+- [x] **WS-10**: Phan quyen 4 roles: OWNER, ADMIN, MEMBER, VIEWER
+- [x] **WS-11**: Workspace role guard kiem tra quyen truoc moi action
 - [ ] **WS-12**: Frontend WorkspaceListPage + WorkspaceSettingsPage
 - [ ] **WS-13**: Frontend MembersPage + JoinInvitationPage
 - [ ] **WS-14**: Frontend WorkspaceSwitcher dropdown o header
@@ -157,7 +157,8 @@
 |-------------|-------|--------|--------|
 | AUTH-01..13 | Phase 1 | `01-feat-auth-be` | Hoan thanh |
 | AUTH (FE) | Phase 1 | `02-feat-auth-fe` | Dang lam |
-| WS-01..14 | Phase 2 | `03-feat-workspace-be`, `04-feat-workspace-fe` | Chua lam |
+| WS-01..11 | Phase 2 | `03-feat-workspace-be` | Hoan thanh |
+| WS-12..14 | Phase 2 | `04-feat-workspace-fe` | Chua lam |
 | PROJ-01..07 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
 | TASK-01..11 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
 | AI-01..06 | Phase 3 | `07-feat-ai-be`, `08-feat-ai-fe` | Chua lam |
@@ -171,4 +172,4 @@
 
 ---
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-08*
