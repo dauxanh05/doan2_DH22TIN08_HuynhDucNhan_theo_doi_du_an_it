@@ -24,7 +24,7 @@ interface AuthResponse {
   };
 }
 
-export function useLogin() {
+export function useLogin(redirectTo?: string) {
   const setAuth = useAuthStore((state) => state.setAuth);
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ export function useLogin() {
     onSuccess: (data) => {
       setAuth(data.user, data.accessToken);
       toast.success('Đăng nhập thành công!');
-      navigate('/', { replace: true });
+      navigate(redirectTo || '/', { replace: true });
     },
     onError: (error: unknown) => {
       const message =

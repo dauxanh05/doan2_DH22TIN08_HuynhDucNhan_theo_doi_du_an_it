@@ -9,7 +9,7 @@ interface RegisterDto {
   password: string;
 }
 
-export function useRegister() {
+export function useRegister(redirectTo?: string) {
   const navigate = useNavigate();
 
   return useMutation({
@@ -19,7 +19,10 @@ export function useRegister() {
     },
     onSuccess: () => {
       toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực.');
-      navigate('/login', { replace: true });
+      navigate('/login', {
+        replace: true,
+        state: redirectTo ? { from: redirectTo } : { fromRegister: true },
+      });
     },
     onError: (error: unknown) => {
       const message =

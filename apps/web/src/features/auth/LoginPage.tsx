@@ -16,8 +16,11 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const loginMutation = useLogin();
   const location = useLocation();
+
+  // Read redirect target from route state (e.g. from invite page)
+  const redirectTo = location.state?.from as string | undefined;
+  const loginMutation = useLogin(redirectTo);
 
   // Show message if redirected from register
   const fromRegister = location.state?.fromRegister;

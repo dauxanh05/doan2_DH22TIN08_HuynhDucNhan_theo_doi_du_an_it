@@ -24,6 +24,12 @@ import DashboardPage from '@/features/dashboard/DashboardPage';
 import ProjectsPage from '@/features/projects/ProjectsPage';
 import KanbanPage from '@/features/kanban/KanbanPage';
 
+// Workspace pages
+import WorkspaceListPage from '@/features/workspaces/WorkspaceListPage';
+import WorkspaceSettingsPage from '@/features/workspaces/WorkspaceSettingsPage';
+import MembersPage from '@/features/workspaces/MembersPage';
+import JoinInvitationPage from '@/features/workspaces/JoinInvitationPage';
+
 function App() {
   const theme = useThemeStore((state) => state.theme);
 
@@ -76,6 +82,9 @@ function App() {
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
       </Route>
 
+      {/* Join invitation — standalone, accessible regardless of auth state */}
+      <Route path="/invite/:token" element={<JoinInvitationPage />} />
+
       {/* Protected routes — redirect to /login if not authenticated */}
       <Route
         element={
@@ -89,6 +98,11 @@ function App() {
         <Route path="/projects/:projectId/kanban" element={<KanbanPage />} />
         <Route path="/settings/profile" element={<ProfilePage />} />
         <Route path="/settings/password" element={<ChangePasswordPage />} />
+
+        {/* Workspace routes */}
+        <Route path="/workspaces" element={<WorkspaceListPage />} />
+        <Route path="/workspaces/:id/settings" element={<WorkspaceSettingsPage />} />
+        <Route path="/workspaces/:id/members" element={<MembersPage />} />
       </Route>
 
       {/* Fallback */}

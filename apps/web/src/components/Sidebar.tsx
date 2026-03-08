@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import clsx from 'clsx';
+import WorkspaceSwitcher from '@/components/WorkspaceSwitcher';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -24,6 +25,11 @@ export default function Sidebar() {
         <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
           DevTeamOS
         </h1>
+      </div>
+
+      {/* Workspace Switcher */}
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <WorkspaceSwitcher />
       </div>
 
       {/* Navigation */}

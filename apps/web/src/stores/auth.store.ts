@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useWorkspaceStore } from '@/stores/workspace.store';
 
 interface User {
   id: string;
@@ -36,7 +37,10 @@ export const useAuthStore = create<AuthState>()(
 
       setAccessToken: (token) => set({ accessToken: token }),
 
-      logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+      logout: () => {
+        useWorkspaceStore.getState().clearWorkspaces();
+        set({ user: null, accessToken: null, isAuthenticated: false });
+      },
 
       updateUser: (updates) =>
         set((state) => ({

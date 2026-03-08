@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRegister } from '@/hooks/useRegister';
 
@@ -22,7 +22,11 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const registerMutation = useRegister();
+  const location = useLocation();
+
+  // Read redirect target from route state (e.g. from invite page)
+  const redirectTo = location.state?.from as string | undefined;
+  const registerMutation = useRegister(redirectTo);
 
   const {
     register,
