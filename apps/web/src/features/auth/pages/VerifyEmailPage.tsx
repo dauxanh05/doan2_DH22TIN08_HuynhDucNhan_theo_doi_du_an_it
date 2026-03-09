@@ -15,7 +15,6 @@ export default function VerifyEmailPage() {
     }
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Token không tồn tại → hiện error ngay thay vì spinner vô hạn
   if (!token) {
     return (
       <div className="text-center py-8">

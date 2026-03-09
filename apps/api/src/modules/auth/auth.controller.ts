@@ -16,10 +16,13 @@ import { Throttle } from '@nestjs/throttler';
 import { Request, Response, CookieOptions } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
+import { SendOtpDto } from './dto/send-otp.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ExchangeGoogleCodeDto } from './dto/exchange-google-code.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
@@ -41,18 +44,28 @@ export class AuthController {
     private configService: ConfigService,
   ) {}
 
-  @Post('register')
+  @Post('send-otp')
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send OTP to email for registration' })
+  @ApiResponse({ status: 200, description: 'OTP sent' })
+  @ApiResponse({ status: 409, description: 'Email already exists' })
+  async sendOtp(@Body() dto: SendOtpDto) {
+    return this.authService.sendOtp(dto);
+  }
+
+  @Post('verify-otp')
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User registered successfully' })
-  @ApiResponse({ status: 409, description: 'Email already exists' })
-  async register(@Body() dto: RegisterDto) {
-    const user = await this.authService.register(dto);
-    return {
-      message: 'Dang ky thanh cong',
-      user,
-    };
+  @ApiOperation({ summary: 'Verify OTP and create account' })
+  @ApiResponse({ status: 201, description: 'Account created, tokens returned' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired OTP' })
+  async verifyOtp(@Body() dto: VerifyOtpDto, @Res({ passthrough: true }) response: Response) {
+    const { accessToken, refreshToken, user } = await this.authService.verifyOtp(dto.email, dto.otp);
+
+    response.cookie(REFRESH_COOKIE_NAME, refreshToken, REFRESH_COOKIE_OPTIONS);
+
+    return { accessToken, user };
   }
 
   @Post('login')
@@ -113,14 +126,6 @@ export class AuthController {
     return result;
   }
 
-  @Get('verify-email/:token')
-  @ApiOperation({ summary: 'Verify user email with token' })
-  @ApiResponse({ status: 200, description: 'Email verified successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
-  async verifyEmail(@Param('token') token: string) {
-    return this.authService.verifyEmail(token);
-  }
-
   @Post('forgot-password')
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
@@ -162,14 +167,27 @@ export class AuthController {
 
   @Post('google/exchange')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Exchange one-time Google auth code for access token' })
-  @ApiResponse({ status: 200, description: 'Access token issued successfully' })
+  @ApiOperation({ summary: 'Exchange one-time Google auth code for access token + user' })
+  @ApiResponse({ status: 200, description: 'Access token and user returned' })
   @ApiResponse({ status: 401, description: 'Invalid or expired code' })
-  async exchangeGoogleCode(@Body('code') code: string) {
-    if (!code) {
-      throw new UnauthorizedException('Ma dang nhap Google khong ton tai');
-    }
+  async exchangeGoogleCode(@Body() dto: ExchangeGoogleCodeDto) {
+    return this.authService.exchangeGoogleAuthCode(dto.code);
+  }
 
-    return this.authService.exchangeGoogleAuthCode(code);
+  @Get('verify-email/:token')
+  @ApiOperation({ summary: 'Verify email via token link (backward compat)' })
+  @ApiResponse({ status: 200, description: 'Email verified' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+  async verifyEmail(@Param('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification-email')
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend verification email for unverified users' })
+  @ApiResponse({ status: 200, description: 'Verification email sent if applicable' })
+  async resendVerificationEmail(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerificationEmail(dto.email);
   }
 }

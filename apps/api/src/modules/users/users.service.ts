@@ -17,8 +17,9 @@ export class UsersService {
    * Used by: register, verifyEmail, forgotPassword, resetPassword, googleLogin
    */
   async findByEmail(email: string) {
+    const normalizedEmail = email.toLowerCase().trim();
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
     if (!user) return null;
     const { password, ...result } = user;
@@ -30,7 +31,8 @@ export class UsersService {
    * WARNING: Only use when you need to verify password with bcrypt.compare()
    */
   async findByEmailWithPassword(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.toLowerCase().trim();
+    return this.prisma.user.findUnique({ where: { email: normalizedEmail } });
   }
 
   async findById(id: string) {

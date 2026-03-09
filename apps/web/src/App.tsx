@@ -15,9 +15,10 @@ import LoginPage from '@/features/auth/LoginPage';
 import RegisterPage from '@/features/auth/RegisterPage';
 import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage';
-import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage';
 import ProfilePage from '@/features/auth/pages/ProfilePage';
 import ChangePasswordPage from '@/features/auth/pages/ChangePasswordPage';
+import GoogleCallbackPage from '@/features/auth/pages/GoogleCallbackPage';
+import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage';
 
 // Main pages (placeholders)
 import DashboardPage from '@/features/dashboard/DashboardPage';
@@ -79,6 +80,7 @@ function App() {
           }
         />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
       </Route>
 
