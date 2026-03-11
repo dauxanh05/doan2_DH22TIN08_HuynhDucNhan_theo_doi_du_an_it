@@ -1,22 +1,37 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
-  FolderKanban,
   Settings,
+  Users,
   LogOut,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
+import { useWorkspaceStore } from '@/stores/workspace.store';
 import clsx from 'clsx';
 import WorkspaceSwitcher from '@/components/WorkspaceSwitcher';
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Dự án', href: '/projects', icon: FolderKanban },
-  { name: 'Cài đặt', href: '/settings', icon: Settings },
-];
-
 export default function Sidebar() {
   const { user, logout } = useAuthStore();
+  const currentWorkspace = useWorkspaceStore((s) => s.currentWorkspace);
+
+  // Build navigation items dynamically based on current workspace
+  const navigation = [
+    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    ...(currentWorkspace
+      ? [
+          {
+            name: 'Thành viên',
+            href: `/workspaces/${currentWorkspace.id}/members`,
+            icon: Users,
+          },
+          {
+            name: 'Cài đặt',
+            href: `/workspaces/${currentWorkspace.id}/settings`,
+            icon: Settings,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">

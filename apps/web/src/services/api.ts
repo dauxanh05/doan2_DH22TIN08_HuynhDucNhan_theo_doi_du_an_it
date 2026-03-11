@@ -2,6 +2,32 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/stores/auth.store';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_ORIGIN = API_URL.replace(/\/api\/?$/, '');
+
+export function resolveApiAssetUrl(assetUrl: string | null | undefined) {
+  if (!assetUrl) {
+    return assetUrl ?? null;
+  }
+
+  if (
+    assetUrl.startsWith('http://') ||
+    assetUrl.startsWith('https://') ||
+    assetUrl.startsWith('data:') ||
+    assetUrl.startsWith('blob:')
+  ) {
+    return assetUrl;
+  }
+
+  if (assetUrl.startsWith('/uploads/')) {
+    return `${API_ORIGIN}${assetUrl}`;
+  }
+
+  if (assetUrl.startsWith('uploads/')) {
+    return `${API_ORIGIN}/${assetUrl}`;
+  }
+
+  return assetUrl;
+}
 
 export const api = axios.create({
   baseURL: API_URL,

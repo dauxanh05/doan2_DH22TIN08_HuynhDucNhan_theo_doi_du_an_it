@@ -16,7 +16,15 @@ export default function JoinInvitationPage() {
     if (isHydrated && isAuthenticated && token && !joinWorkspace.isPending && !joinWorkspace.isSuccess && !joinWorkspace.isError) {
       joinWorkspace.mutate(token);
     }
-  }, [isHydrated, isAuthenticated, token]);
+  }, [
+    isHydrated,
+    isAuthenticated,
+    token,
+    joinWorkspace.isPending,
+    joinWorkspace.isSuccess,
+    joinWorkspace.isError,
+    joinWorkspace.mutate,
+  ]);
 
   // Store not hydrated yet — show loading
   if (!isHydrated) {

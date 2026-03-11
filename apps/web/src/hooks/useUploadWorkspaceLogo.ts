@@ -3,45 +3,32 @@ import toast from 'react-hot-toast';
 import api, { resolveApiAssetUrl } from '@/services/api';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 
-interface UpdateWorkspaceDto {
-  name?: string;
-  slug?: string;
-  logo?: string | null;
+interface UploadWorkspaceLogoResponse {
+  logo: string;
 }
 
-interface UpdateWorkspaceParams {
-  workspaceId: string;
-  data: UpdateWorkspaceDto;
-}
-
-interface UpdateWorkspaceResponse {
-  id: string;
-  name: string;
-  slug: string;
-  logo: string | null;
-  plan?: 'FREE' | 'STARTER' | 'PROFESSIONAL';
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export function useUpdateWorkspace() {
+export function useUploadWorkspaceLogo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ workspaceId, data }: UpdateWorkspaceParams) => {
-      const response = await api.patch<UpdateWorkspaceResponse>(`/workspaces/${workspaceId}`, data);
+    mutationFn: async ({ workspaceId, file }: { workspaceId: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('logo', file);
+      const response = await api.patch<UploadWorkspaceLogoResponse>(
+        `/workspaces/${workspaceId}/logo`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
+      );
 
       return {
         ...response.data,
-        logo: resolveApiAssetUrl(response.data.logo),
+        logo: resolveApiAssetUrl(response.data.logo) ?? response.data.logo,
       };
     },
     onSuccess: (data, variables) => {
       const resolvedLogo = resolveApiAssetUrl(data.logo);
-      const normalizedData = {
-        ...data,
-        logo: resolvedLogo,
-      };
 
       queryClient.setQueryData(['workspace', variables.workspaceId], (previous: unknown) => {
         if (!previous || typeof previous !== 'object') {
@@ -50,7 +37,7 @@ export function useUpdateWorkspace() {
 
         return {
           ...(previous as Record<string, unknown>),
-          ...normalizedData,
+          logo: resolvedLogo,
         };
       });
 
@@ -68,7 +55,7 @@ export function useUpdateWorkspace() {
           ) {
             return {
               ...(workspace as Record<string, unknown>),
-              ...normalizedData,
+              logo: resolvedLogo,
             };
           }
 
@@ -80,24 +67,19 @@ export function useUpdateWorkspace() {
       queryClient.invalidateQueries({ queryKey: ['workspace', variables.workspaceId] });
 
       const { currentWorkspace, setCurrentWorkspace } = useWorkspaceStore.getState();
-      if (currentWorkspace?.id === variables.workspaceId) {
+      if (currentWorkspace?.id === variables.workspaceId && resolvedLogo) {
         setCurrentWorkspace({
           ...currentWorkspace,
-          name: data.name ?? currentWorkspace.name,
-          slug: data.slug ?? currentWorkspace.slug,
-          logo: resolvedLogo ?? currentWorkspace.logo,
-          plan: data.plan ?? currentWorkspace.plan,
-          createdAt: data.createdAt ?? currentWorkspace.createdAt,
-          updatedAt: data.updatedAt ?? currentWorkspace.updatedAt,
+          logo: resolvedLogo,
         });
       }
 
-      toast.success('Cập nhật workspace thành công!');
+      toast.success('Cập nhật logo thành công!');
     },
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Cập nhật workspace thất bại';
+        'Cập nhật logo thất bại';
       toast.error(message);
     },
   });

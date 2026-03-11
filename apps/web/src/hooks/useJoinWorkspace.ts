@@ -3,21 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '@/services/api';
 
+interface JoinWorkspaceResponse {
+  message: string;
+  workspaceId: string;
+}
+
 export function useJoinWorkspace() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (token: string) => {
-      const response = await api.post<{ message: string; workspaceId: string }>(
-        `/workspaces/join/${token}`,
-      );
+      const response = await api.post<JoinWorkspaceResponse>(`/workspaces/join/${token}`);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+      await queryClient.refetchQueries({ queryKey: ['workspaces'], type: 'all' });
       toast.success('Tham gia workspace thành công!');
-      navigate('/', { replace: true });
+      navigate('/workspaces', {
+        replace: true,
+        state: { joinedWorkspaceId: data.workspaceId },
+      });
     },
     onError: (error: unknown) => {
       const message =

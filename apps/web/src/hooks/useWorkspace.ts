@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import api from '@/services/api';
+import api, { resolveApiAssetUrl } from '@/services/api';
 
 interface WorkspaceMember {
   id: string;
@@ -31,7 +31,10 @@ export function useWorkspace(workspaceId: string | undefined) {
     queryKey: ['workspace', workspaceId],
     queryFn: async () => {
       const response = await api.get<WorkspaceDetail>(`/workspaces/${workspaceId}`);
-      return response.data;
+      return {
+        ...response.data,
+        logo: resolveApiAssetUrl(response.data.logo),
+      };
     },
     enabled: !!workspaceId,
     staleTime: 1000 * 60 * 2, // 2 minutes

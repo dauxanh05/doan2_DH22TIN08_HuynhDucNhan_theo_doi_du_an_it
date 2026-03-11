@@ -17,7 +17,7 @@ interface WorkspaceState {
   currentWorkspace: Workspace | null;
   setWorkspaces: (workspaces: Workspace[]) => void;
   setCurrentWorkspace: (workspace: Workspace | null) => void;
-  switchWorkspace: (workspaceId: string) => void;
+  switchWorkspace: (workspaceId: string) => Workspace | null;
   clearWorkspaces: () => void;
 }
 
@@ -29,8 +29,11 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setWorkspaces: (workspaces) => set({ workspaces }),
       setCurrentWorkspace: (workspace) => set({ currentWorkspace: workspace }),
       switchWorkspace: (workspaceId) => {
-        const ws = get().workspaces.find((w) => w.id === workspaceId);
-        if (ws) set({ currentWorkspace: ws });
+        const ws = get().workspaces.find((w) => w.id === workspaceId) ?? null;
+        if (ws) {
+          set({ currentWorkspace: ws });
+        }
+        return ws;
       },
       clearWorkspaces: () => set({ workspaces: [], currentWorkspace: null }),
     }),

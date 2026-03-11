@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronDown, Plus, Building2 } from 'lucide-react';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 
@@ -23,6 +23,7 @@ export default function WorkspaceSwitcher() {
   const currentWorkspace = useWorkspaceStore((s) => s.currentWorkspace);
   const switchWorkspace = useWorkspaceStore((s) => s.switchWorkspace);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -37,19 +38,37 @@ export default function WorkspaceSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle workspace selection
+  // Handle workspace selection — stay on current page
   const handleSelect = (workspaceId: string) => {
-    switchWorkspace(workspaceId);
+    const nextWorkspace = switchWorkspace(workspaceId);
     setIsOpen(false);
-    navigate('/');
+
+    if (!nextWorkspace) {
+      navigate('/workspaces', { replace: true });
+      return;
+    }
+
+    // If on a workspace-specific page, rewrite URL to the new workspace
+    const wsMatch = location.pathname.match(/^\/workspaces\/[^/]+(\/.*)?$/);
+    if (wsMatch) {
+      const suffix = wsMatch[1] || '/settings';
+      navigate(`/workspaces/${workspaceId}${suffix}`);
+      return;
+    }
+
+    navigate(`/workspaces/${workspaceId}/settings`);
   };
+
+  const isDisabled = workspaces.length === 0;
 
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        disabled={isDisabled}
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
       >
         {/* Workspace logo or initial */}
         {currentWorkspace ? (

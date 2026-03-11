@@ -26,10 +26,10 @@ export default function WorkspaceListPage() {
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
 
-  // Select workspace and navigate to dashboard
+  // Select workspace and navigate to settings of the selected workspace
   const handleSelect = (ws: NonNullable<typeof workspaces>[number]) => {
     setCurrentWorkspace(ws);
-    navigate('/');
+    navigate(`/workspaces/${ws.id}/settings`);
   };
 
   return (

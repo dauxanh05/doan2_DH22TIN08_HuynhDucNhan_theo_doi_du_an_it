@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,8 +8,10 @@ import { useWorkspace } from '@/hooks/useWorkspace';
 import { useUpdateWorkspace } from '@/hooks/useUpdateWorkspace';
 import { useDeleteWorkspace } from '@/hooks/useDeleteWorkspace';
 import { useAuthStore } from '@/stores/auth.store';
+import { useWorkspaceStore } from '@/stores/workspace.store';
+import LogoPicker from '@/components/LogoPicker';
 
-// Zod validation schema for workspace settings
+// Zod validation schema for workspace settings (logo managed separately via upload)
 const settingsSchema = z.object({
   name: z.string().min(2, 'Tên tối thiểu 2 ký tự').max(50, 'Tên tối đa 50 ký tự'),
   slug: z
@@ -17,7 +19,6 @@ const settingsSchema = z.object({
     .min(2, 'Slug tối thiểu 2 ký tự')
     .max(50, 'Slug tối đa 50 ký tự')
     .regex(/^[a-z0-9-]+$/, 'Chỉ cho phép chữ thường, số và dấu gạch ngang'),
-  logo: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -29,6 +30,44 @@ export default function WorkspaceSettingsPage() {
   const updateWorkspace = useUpdateWorkspace();
   const deleteWorkspace = useDeleteWorkspace();
   const user = useAuthStore((s) => s.user);
+  const setCurrentWorkspace = useWorkspaceStore((s) => s.setCurrentWorkspace);
+  const currentWorkspace = useWorkspaceStore((s) => s.currentWorkspace);
+
+  // Sync currentWorkspace when viewing settings of a workspace
+  useEffect(() => {
+    if (!workspace) return;
+
+    const nextWorkspace = {
+      id: workspace.id,
+      name: workspace.name,
+      slug: workspace.slug,
+      logo: workspace.logo,
+      plan: workspace.plan,
+      role: workspace.members.find((m) => m.userId === user?.id)?.role || 'MEMBER',
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+    };
+
+    if (!currentWorkspace || currentWorkspace.id !== workspace.id) {
+      setCurrentWorkspace(nextWorkspace);
+      return;
+    }
+
+    const needsSync =
+      currentWorkspace.name !== workspace.name ||
+      currentWorkspace.slug !== workspace.slug ||
+      currentWorkspace.logo !== workspace.logo ||
+      currentWorkspace.plan !== workspace.plan ||
+      currentWorkspace.updatedAt !== workspace.updatedAt;
+
+    if (needsSync) {
+      setCurrentWorkspace({
+        ...currentWorkspace,
+        ...nextWorkspace,
+        role: currentWorkspace.role || nextWorkspace.role,
+      });
+    }
+  }, [workspace, currentWorkspace, setCurrentWorkspace, user?.id]);
 
   // Derive role from workspace members data (not global store)
   const myMembership = workspace?.members.find((m) => m.userId === user?.id);
@@ -53,7 +92,6 @@ export default function WorkspaceSettingsPage() {
       reset({
         name: workspace.name,
         slug: workspace.slug,
-        logo: workspace.logo || '',
       });
     }
   }, [workspace, reset]);
@@ -66,7 +104,6 @@ export default function WorkspaceSettingsPage() {
       data: {
         name: data.name,
         slug: data.slug,
-        logo: data.logo || null,
       },
     });
   };
@@ -90,16 +127,9 @@ export default function WorkspaceSettingsPage() {
     );
   }
 
-  // Workspace not found
-  if (!workspace) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-gray-500 dark:text-gray-400">Workspace không tồn tại.</p>
-        <Link to="/workspaces" className="text-indigo-600 hover:text-indigo-500 text-sm mt-2 inline-block">
-          Quay lại danh sách
-        </Link>
-      </div>
-    );
+  // Redirect invalid or stale workspace routes back to list
+  if (!workspace || !currentWorkspace || currentWorkspace.id !== workspace.id) {
+    return <Navigate to="/workspaces" replace />;
   }
 
   return (
@@ -116,6 +146,15 @@ export default function WorkspaceSettingsPage() {
       </nav>
 
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Cài đặt workspace</h1>
+
+      {/* Logo section */}
+      <div className="card p-6 mb-6">
+        <LogoPicker
+          workspaceId={workspace.id}
+          currentLogo={workspace.logo}
+          workspaceName={workspace.name}
+        />
+      </div>
 
       {/* Settings form */}
       <form onSubmit={handleSubmit(onSubmit)} className="card p-6 space-y-4">
@@ -145,20 +184,6 @@ export default function WorkspaceSettingsPage() {
             placeholder="my-workspace"
           />
           {errors.slug && <p className="mt-1 text-sm text-red-500">{errors.slug.message}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="logo" className="label">
-            Logo URL
-          </label>
-          <input
-            id="logo"
-            type="text"
-            {...register('logo')}
-            className="input"
-            placeholder="https://example.com/logo.png"
-          />
-          {errors.logo && <p className="mt-1 text-sm text-red-500">{errors.logo.message}</p>}
         </div>
 
         <div className="flex justify-end pt-2">

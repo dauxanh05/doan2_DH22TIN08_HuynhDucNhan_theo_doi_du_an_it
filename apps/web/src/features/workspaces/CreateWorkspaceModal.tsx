@@ -15,7 +15,6 @@ const createSchema = z.object({
     .min(2, 'Slug tối thiểu 2 ký tự')
     .max(50, 'Slug tối đa 50 ký tự')
     .regex(/^[a-z0-9-]+$/, 'Chỉ cho phép chữ thường, số và dấu gạch ngang'),
-  logo: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
 });
 
 type CreateWorkspaceForm = z.infer<typeof createSchema>;
@@ -42,7 +41,6 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
     defaultValues: {
       name: '',
       slug: '',
-      logo: '',
     },
   });
 
@@ -71,13 +69,12 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
       {
         name: data.name,
         slug: data.slug,
-        logo: data.logo || undefined,
       },
       {
         onSuccess: (newWorkspace) => {
           setCurrentWorkspace({ ...newWorkspace, role: 'OWNER' });
           onClose();
-          navigate('/');
+          navigate(`/workspaces/${newWorkspace.id}/settings`);
         },
       },
     );
@@ -135,20 +132,6 @@ export default function CreateWorkspaceModal({ isOpen, onClose }: CreateWorkspac
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Tự động tạo từ tên. Có thể chỉnh sửa.
             </p>
-          </div>
-
-          <div>
-            <label htmlFor="create-logo" className="label">
-              Logo URL <span className="text-gray-400 font-normal">(tùy chọn)</span>
-            </label>
-            <input
-              id="create-logo"
-              type="text"
-              {...register('logo')}
-              className="input"
-              placeholder="https://example.com/logo.png"
-            />
-            {errors.logo && <p className="mt-1 text-sm text-red-500">{errors.logo.message}</p>}
           </div>
 
           {/* Actions */}

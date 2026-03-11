@@ -7,12 +7,16 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+
+const UPLOADS_URL_PREFIX = '/uploads/';
 
 @Injectable()
 export class WorkspacesService {
@@ -96,6 +100,36 @@ export class WorkspacesService {
   async delete(workspaceId: string) {
     await this.prisma.workspace.delete({ where: { id: workspaceId } });
     return { message: 'Workspace deleted successfully' };
+  }
+
+  async uploadLogo(workspaceId: string, file: Express.Multer.File) {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      select: { logo: true },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    // Delete old logo file if it was an upload
+    if (workspace.logo?.startsWith(UPLOADS_URL_PREFIX)) {
+      const uploadDir = path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads');
+      const relativeLogoPath = workspace.logo.slice(UPLOADS_URL_PREFIX.length);
+      const oldPath = path.resolve(uploadDir, relativeLogoPath);
+
+      if (oldPath.startsWith(`${uploadDir}${path.sep}`) && fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    const logoPath = `/uploads/workspace-logos/${file.filename}`;
+    await this.prisma.workspace.update({
+      where: { id: workspaceId },
+      data: { logo: logoPath },
+    });
+
+    return { logo: logoPath };
   }
 
   // === Member management ===
