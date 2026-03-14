@@ -22,6 +22,8 @@ import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage';
 
 // Main pages (placeholders)
 import DashboardPage from '@/features/dashboard/DashboardPage';
+import ProjectDetailPage from '@/features/projects/ProjectDetailPage';
+import ProjectListPage from '@/features/projects/ProjectListPage';
 import ProjectsPage from '@/features/projects/ProjectsPage';
 import KanbanPage from '@/features/kanban/KanbanPage';
 
@@ -97,12 +99,14 @@ function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetailPage />} />
         <Route path="/projects/:projectId/kanban" element={<KanbanPage />} />
         <Route path="/settings/profile" element={<ProfilePage />} />
         <Route path="/settings/password" element={<ChangePasswordPage />} />
 
         {/* Workspace routes */}
         <Route path="/workspaces" element={<WorkspaceListPage />} />
+        <Route path="/workspaces/:id/projects" element={<ProjectListPage />} />
         <Route path="/workspaces/:id/settings" element={<WorkspaceSettingsPage />} />
         <Route path="/workspaces/:id/members" element={<MembersPage />} />
       </Route>

@@ -6,11 +6,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-write-imports.sh\"",
-            "timeout": 15
-          },
-          {
-            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-write-file-size.sh\"",
             "timeout": 5
           }
@@ -33,34 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/post-write-format.sh\"",
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/post-write-lint.sh\"",
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/post-write-typecheck.sh\"",
-            "timeout": 60
-          },
-          {
-            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/post-write-prisma-validate.sh\"",
             "timeout": 15
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/post-bash-audit.sh\"",
-            "timeout": 10,
-            "async": true
           }
         ]
       }

@@ -4,43 +4,46 @@
 
 See: .context/PROJECT.md
 **Core value:** UX/UI xuat sac + AI features tich hop
-**Current focus:** Phase 2 DONE — Phase 3 next
+**Current focus:** Phase 3 DONE — Phase 4 next
 
 ## Current Position
 
-Phase: 2 of 7 (Workspace & Team) — DONE
-Branch: `main` (branches 03 + 04 merged)
-Status: Phase 2 hoan thanh — BE + FE workspace, san sang Phase 3
-Last activity: 2026-03-08 — Hoan thanh toan bo workspace (BE 10 endpoints + FE 4 pages + hooks + components)
-Progress: [############________] 55%
+Phase: 3 of 7 (Project/Task/AI) — DONE
+Branch: `main` (branches 05 + 06 + 07 merged)
+Status: Phase 3 hoan thanh — Project/Task/AI BE+FE
+Last activity: 2026-03-14 — Phase 3 commit vao main
+Progress: [##############______] 70%
 
-## What's Done (Phase 2 BE — branch 03)
+## What's Done (Summary)
 
-- DTOs: create/update workspace, invite member, update member role
-- WorkspaceRoles decorator + WorkspaceRoleGuard
-- Workspace CRUD: create, list, detail, update, delete (5 endpoints)
-- Members & invitation: list, invite, remove, update role, join by token (5 endpoints)
-- Security: email-bound invite validation, route protection
-- Build: `nest build` pass, Postman 10 endpoints pass
+**Phase 1** (AUTH): 13 endpoints BE + FE auth flows — DONE
+**Phase 2** (WS): 10 endpoints BE + FE workspace/team — DONE
 
-## What's Done (Phase 2 FE — branch 04)
+**Phase 3 BE** (branch 05):
+- Project module: CRUD + stats (6 endpoints)
+- Task module: CRUD + reorder, subtasks, assignees (9+ endpoints)
+- Sub-features: checklist CRUD, file attachments upload/delete
+- Build: nest build pass, Postman tests pass
 
-- Workspace store (Zustand + persist currentWorkspace)
-- 10 hooks (TanStack Query): useWorkspaces, useWorkspace, useWorkspaceMembers, + 7 mutations
-- 4 pages: WorkspaceListPage, WorkspaceSettingsPage, MembersPage, JoinInvitationPage
-- 3 components: WorkspaceSwitcher, CreateWorkspaceModal, InviteMemberModal
-- Fixes: invite redirect flow, clear workspace on logout, role from route data, error states
-- Build: `tsc --noEmit` pass
+**Phase 3 FE** (branch 06):
+- 5 hooks: useProjects, useProject, useTasks, useTask + mutations
+- 2 pages: ProjectListPage, ProjectDetailPage
+- TaskDetailModal + SubtaskList + ChecklistSection + AttachmentSection
+- Build: tsc --noEmit pass
+
+**Phase 3 AI** (branch 07):
+- AI module: 4 endpoints (split-task, analyze-progress, suggest-assignee, code-assist)
+- Error handling + rate limiting cho AI requests
+- Build + manual tests pass
 
 ## What's Next
 
-1. Tiep tuc Phase 3: Project, Task & AI (branches 05-08)
-2. Branch 05-feat-project-task-be → Project + Task CRUD backend
-3. Branch 06-feat-project-task-fe → Project + Task frontend
+1. Phase 4: Kanban Board (branch 09-feat-kanban-fe)
+2. KAN-01..07: drag-drop, filter, quick add, overdue styling
 
 ## Blockers/Concerns
 
-- None — Phase 2 hoan thanh
+- None — Phase 3 hoan thanh
 
 ## Known Warnings (non-blocking)
 
@@ -53,7 +56,7 @@ Progress: [############________] 55%
 - Google OAuth + Email features: lam luon trong MVP (2026-02-15)
 - Refresh token: Database + Cookie (2026-02-15)
 - 4 AI Features tich hop vao MVP (2026-02-15)
-- Auth hardening session: NestJS CacheModule cho Google one-time code exchange (2026-03-06)
+- Auth hardening: NestJS CacheModule cho Google one-time code exchange (2026-03-06)
 - Workspace BE before FE, sequential merge flow (2026-03-08)
 - Email-bound invite validation: joinByToken check user email match invitation (2026-03-08)
 
@@ -61,15 +64,21 @@ Progress: [############________] 55%
 
 ### 2026-03-08
 
-- Branch 03 BE: 3 phases (DTOs+Guard → CRUD → Members+Invite), 10 endpoints
-- Review: fix security blocker (email-bound invite), commit + merge
-- Branch 04 FE Phase 1: expand store + 10 hooks (Tab 3A)
-- Branch 04 FE Phase 2+3: 4 pages + 3 components + routing (Tab 3B)
-- Review: fix invite redirect flow, clear ws on logout, role from route data, error states
-- Commit + merge branch 04 to main, push origin
+- Branch 03 BE + 04 FE: workspace + team, 10 endpoints
 - Phase 2 DONE — WS-01..WS-14 all checked
+
+### 2026-03-11
+
+- Fixed Google OAuth frontend redirect mismatch
+- Workspace UX/state fixes merged to main (commit 3287823)
+
+### 2026-03-14
+
+- Phase 3 commit vao main: branches 05 + 06 + 07 merged
+- PROJ-01..07, TASK-01..11, AI-01..06 all checked [x]
+- Phase 3 DONE — san sang Phase 4 Kanban
 
 ---
 
 *This file must stay under 100 lines. Move old entries to archive when needed.*
-*Last updated: 2026-03-08*
+*Last updated: 2026-03-14*

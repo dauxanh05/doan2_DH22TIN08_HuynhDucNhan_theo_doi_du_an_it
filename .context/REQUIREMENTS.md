@@ -42,27 +42,27 @@
 
 ### Project (PROJ)
 
-- [ ] **PROJ-01**: Tao project trong workspace
-- [ ] **PROJ-02**: Xem danh sach projects trong workspace
-- [ ] **PROJ-03**: Xem chi tiet project
-- [ ] **PROJ-04**: Cap nhat project (name, description, color, icon, status)
-- [ ] **PROJ-05**: Xoa project
-- [ ] **PROJ-06**: Xem thong ke project (tong tasks, % hoan thanh)
-- [ ] **PROJ-07**: Frontend ProjectListPage + ProjectDetailPage
+- [x] **PROJ-01**: Tao project trong workspace
+- [x] **PROJ-02**: Xem danh sach projects trong workspace
+- [x] **PROJ-03**: Xem chi tiet project
+- [x] **PROJ-04**: Cap nhat project (name, description, color, icon, status)
+- [x] **PROJ-05**: Xoa project
+- [x] **PROJ-06**: Xem thong ke project (tong tasks, % hoan thanh)
+- [x] **PROJ-07**: Frontend ProjectListPage + ProjectDetailPage
 
 ### Task (TASK)
 
-- [ ] **TASK-01**: Tao task trong project
-- [ ] **TASK-02**: Xem danh sach tasks (filter, sort)
-- [ ] **TASK-03**: Xem chi tiet task
-- [ ] **TASK-04**: Cap nhat task (title, description, status, priority, dueDate)
-- [ ] **TASK-05**: Xoa task
-- [ ] **TASK-06**: Tao subtask (2 levels max: task -> subtask)
-- [ ] **TASK-07**: Assign/unassign user vao task (nhieu nguoi 1 task)
-- [ ] **TASK-08**: Them/sua/xoa/toggle checklist items
-- [ ] **TASK-09**: Upload/xoa file attachments (local storage)
-- [ ] **TASK-10**: Reorder tasks (cap nhat position khi drag-drop)
-- [ ] **TASK-11**: Frontend TaskDetailModal (modal overlay)
+- [x] **TASK-01**: Tao task trong project
+- [x] **TASK-02**: Xem danh sach tasks (filter, sort)
+- [x] **TASK-03**: Xem chi tiet task
+- [x] **TASK-04**: Cap nhat task (title, description, status, priority, dueDate)
+- [x] **TASK-05**: Xoa task
+- [x] **TASK-06**: Tao subtask (2 levels max: task -> subtask)
+- [x] **TASK-07**: Assign/unassign user vao task (nhieu nguoi 1 task)
+- [x] **TASK-08**: Them/sua/xoa/toggle checklist items
+- [x] **TASK-09**: Upload/xoa file attachments (local storage)
+- [x] **TASK-10**: Reorder tasks (cap nhat position khi drag-drop)
+- [x] **TASK-11**: Frontend TaskDetailModal (modal overlay)
 
 ### Kanban Board (KAN)
 
@@ -76,12 +76,12 @@
 
 ### AI Features (AI)
 
-- [ ] **AI-01**: AI goi y chia task — input mo ta task, output danh sach subtasks goi y
-- [ ] **AI-02**: AI phan tich tien do — input project data, output bao cao + risks + goi y
-- [ ] **AI-03**: AI auto-assign — input task + members + workload, output goi y nguoi phu hop
-- [ ] **AI-04**: AI code assistant — input mo ta ky thuat, output huong dan + code mau
-- [ ] **AI-05**: AI module backend (ai.module, ai.controller, ai.service)
-- [ ] **AI-06**: 4 AI frontend components (AiTaskSplitter, AiProgressAnalyzer, AiAutoAssign, AiCodeAssistant)
+- [x] **AI-01**: AI goi y chia task — input mo ta task, output danh sach subtasks goi y
+- [x] **AI-02**: AI phan tich tien do — input project data, output bao cao + risks + goi y
+- [x] **AI-03**: AI auto-assign — input task + members + workload, output goi y nguoi phu hop
+- [x] **AI-04**: AI code assistant — input mo ta ky thuat, output huong dan + code mau
+- [x] **AI-05**: AI module backend (ai.module, ai.controller, ai.service)
+- [x] **AI-06**: 4 AI frontend components (AiTaskSplitter, AiProgressAnalyzer, AiAutoAssign, AiCodeAssistant)
 
 ### Comments & Real-time (RT)
 
@@ -159,9 +159,9 @@
 | AUTH (FE) | Phase 1 | `02-feat-auth-fe` | Dang lam |
 | WS-01..11 | Phase 2 | `03-feat-workspace-be` | Hoan thanh |
 | WS-12..14 | Phase 2 | `04-feat-workspace-fe` | Chua lam |
-| PROJ-01..07 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
-| TASK-01..11 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Chua lam |
-| AI-01..06 | Phase 3 | `07-feat-ai-be`, `08-feat-ai-fe` | Chua lam |
+| PROJ-01..07 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Hoan thanh |
+| TASK-01..11 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Hoan thanh |
+| AI-01..06 | Phase 3 | `07-feat-ai-be`, `08-feat-ai-fe` | Hoan thanh |
 | KAN-01..07 | Phase 4 | `09-feat-kanban-fe` | Chua lam |
 | RT-01..10 | Phase 5 | `10-feat-realtime-be`, `11-feat-realtime-fe` | Chua lam |
 | DASH-01..07 | Phase 6 | `12-feat-dashboard-be`, `13-feat-dashboard-fe` | Chua lam |
@@ -172,4 +172,4 @@
 
 ---
 
-*Last updated: 2026-03-08*
+*Last updated: 2026-03-14*

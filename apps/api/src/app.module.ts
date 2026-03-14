@@ -12,6 +12,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FilesModule } from './modules/files/files.module';
 import { EmailModule } from './modules/email/email.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -24,6 +25,11 @@ import { EmailModule } from './modules/email/email.module';
         ttl: 60_000,
         limit: 30,
       },
+      {
+        name: 'ai',
+        ttl: 60_000,
+        limit: 5,
+      },
     ]),
     PrismaModule,
     EmailModule,
@@ -35,6 +41,7 @@ import { EmailModule } from './modules/email/email.module';
     CommentsModule,
     NotificationsModule,
     FilesModule,
+    AiModule,
   ],
   providers: [
     {

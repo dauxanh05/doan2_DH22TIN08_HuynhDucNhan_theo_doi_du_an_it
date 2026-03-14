@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import {
+  FolderKanban,
   LayoutDashboard,
   Settings,
   Users,
@@ -19,6 +20,11 @@ export default function Sidebar() {
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     ...(currentWorkspace
       ? [
+          {
+            name: 'Dự án',
+            href: `/workspaces/${currentWorkspace.id}/projects`,
+            icon: FolderKanban,
+          },
           {
             name: 'Thành viên',
             href: `/workspaces/${currentWorkspace.id}/members`,

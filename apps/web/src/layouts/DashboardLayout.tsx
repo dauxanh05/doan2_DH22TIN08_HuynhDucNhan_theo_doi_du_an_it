@@ -13,7 +13,7 @@ export default function DashboardLayout() {
   const { isLoading } = useWorkspaces();
 
   useEffect(() => {
-    const match = location.pathname.match(/^\/workspaces\/([^/]+)\/(settings|members)$/);
+    const match = location.pathname.match(/^\/workspaces\/([^/]+)\/(projects|settings|members)$/);
     if (!match || isLoading) return;
 
     const routeWorkspaceId = match[1];

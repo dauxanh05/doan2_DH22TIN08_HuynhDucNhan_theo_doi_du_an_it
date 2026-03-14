@@ -1,52 +1,52 @@
 # 05-feat-project-task-be - TODO
 
 ## Project Module
-- [ ] Tao `projects.module.ts`
-- [ ] Tao `projects.controller.ts`
-- [ ] Tao `projects.service.ts`
-- [ ] Tao DTOs: create-project.dto.ts, update-project.dto.ts
-- [ ] POST /workspaces/:workspaceId/projects
-- [ ] GET /workspaces/:workspaceId/projects
-- [ ] GET /projects/:id
-- [ ] PATCH /projects/:id
-- [ ] DELETE /projects/:id
-- [ ] GET /projects/:id/stats
+- [x] Tao `projects.module.ts`
+- [x] Tao `projects.controller.ts`
+- [x] Tao `projects.service.ts`
+- [x] Tao DTOs: create-project.dto.ts, update-project.dto.ts
+- [x] POST /workspaces/:workspaceId/projects
+- [x] GET /workspaces/:workspaceId/projects
+- [x] GET /projects/:id
+- [x] PATCH /projects/:id
+- [x] DELETE /projects/:id
+- [x] GET /projects/:id/stats
 
 ## Task Module
-- [ ] Tao `tasks.module.ts`
-- [ ] Tao `tasks.controller.ts`
-- [ ] Tao `tasks.service.ts`
-- [ ] Tao DTOs: create-task.dto.ts, update-task.dto.ts, reorder-task.dto.ts
-- [ ] POST /projects/:projectId/tasks
-- [ ] GET /projects/:projectId/tasks (filter, sort)
-- [ ] GET /tasks/:id
-- [ ] PATCH /tasks/:id
-- [ ] DELETE /tasks/:id
-- [ ] PATCH /tasks/reorder
+- [x] Tao `tasks.module.ts`
+- [x] Tao `tasks.controller.ts`
+- [x] Tao `tasks.service.ts`
+- [x] Tao DTOs: create-task.dto.ts, update-task.dto.ts, reorder-task.dto.ts
+- [x] POST /projects/:projectId/tasks
+- [x] GET /projects/:projectId/tasks (filter, sort)
+- [x] GET /tasks/:id
+- [x] PATCH /tasks/:id
+- [x] DELETE /tasks/:id
+- [x] PATCH /tasks/reorder
 
 ## Sub-features
-- [ ] POST /tasks/:id/subtasks (max 2 levels)
-- [ ] POST /tasks/:id/assignees
-- [ ] DELETE /tasks/:id/assignees/:userId
-- [ ] GET /tasks/:id/checklists
-- [ ] POST /tasks/:id/checklists
-- [ ] PATCH /checklists/:id
-- [ ] DELETE /checklists/:id
+- [x] POST /tasks/:id/subtasks (max 2 levels)
+- [x] POST /tasks/:id/assignees
+- [x] DELETE /tasks/:id/assignees/:userId
+- [x] GET /tasks/:id/checklists
+- [x] POST /tasks/:id/checklists
+- [x] PATCH /checklists/:id
+- [x] DELETE /checklists/:id
 
 ## File Upload Module
-- [ ] Tao `files.module.ts`
-- [ ] Tao `files.controller.ts`
-- [ ] Tao `files.service.ts`
-- [ ] POST /tasks/:id/attachments (upload)
-- [ ] DELETE /attachments/:id
-- [ ] Validate file type + size
+- [x] Tao `files.module.ts`
+- [x] Tao `files.controller.ts`
+- [x] Tao `files.service.ts`
+- [x] POST /tasks/:id/attachments (upload)
+- [x] DELETE /attachments/:id
+- [x] Validate file type + size
 
 ## Test manual
-- [ ] Test CRUD project
-- [ ] Test CRUD task
-- [ ] Test subtasks (max 2 levels)
-- [ ] Test assign/unassign user
-- [ ] Test checklist CRUD
-- [ ] Test file upload + delete
-- [ ] Test reorder tasks
-- [ ] Test project stats
+- [x] Test CRUD project
+- [x] Test CRUD task
+- [x] Test subtasks (max 2 levels)
+- [x] Test assign/unassign user
+- [x] Test checklist CRUD
+- [x] Test file upload + delete
+- [x] Test reorder tasks
+- [x] Test project stats

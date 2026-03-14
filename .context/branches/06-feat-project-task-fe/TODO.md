@@ -1,36 +1,36 @@
 # 06-feat-project-task-fe - TODO
 
 ## API Hooks
-- [ ] useProjects() - danh sach projects
-- [ ] useProject(id) - chi tiet project
-- [ ] useTasks(projectId) - danh sach tasks
-- [ ] useTask(id) - chi tiet task
-- [ ] Mutation hooks: create, update, delete project/task
+- [x] useProjects() - danh sach projects
+- [x] useProject(id) - chi tiet project
+- [x] useTasks(projectId) - danh sach tasks
+- [x] useTask(id) - chi tiet task
+- [x] Mutation hooks: create, update, delete project/task
 
 ## Pages
-- [ ] ProjectListPage - danh sach + tao moi
-- [ ] ProjectDetailPage - chi tiet project (Kanban placeholder)
+- [x] ProjectListPage - danh sach + tao moi
+- [x] ProjectDetailPage - chi tiet project (Kanban placeholder)
 
 ## Task Detail Modal
-- [ ] TaskDetailModal - modal container
-- [ ] Task title (editable inline)
-- [ ] Status dropdown (TODO, IN_PROGRESS, DONE)
-- [ ] Priority dropdown (URGENT, HIGH, MEDIUM, LOW)
-- [ ] Due date picker
-- [ ] Assignees selector
-- [ ] Description textarea (plain text)
+- [x] TaskDetailModal - modal container
+- [x] Task title (editable inline)
+- [x] Status dropdown (TODO, IN_PROGRESS, DONE)
+- [x] Priority dropdown (URGENT, HIGH, MEDIUM, LOW)
+- [x] Due date picker
+- [x] Assignees selector
+- [x] Description textarea (plain text)
 
 ## Sub-components
-- [ ] SubtaskList - danh sach subtasks + add
-- [ ] ChecklistSection - checklist items + toggle + add
-- [ ] AttachmentSection - file list + upload + delete
+- [x] SubtaskList - danh sach subtasks + add
+- [x] ChecklistSection - checklist items + toggle + add
+- [x] AttachmentSection - file list + upload + delete
 
 ## Test manual
-- [ ] Test tao project moi
-- [ ] Test xem danh sach projects
-- [ ] Test mo task detail modal
-- [ ] Test edit task (title, status, priority, due date)
-- [ ] Test assign/unassign user
-- [ ] Test subtasks CRUD
-- [ ] Test checklist toggle + CRUD
-- [ ] Test upload/delete attachment
+- [x] Test tao project moi
+- [x] Test xem danh sach projects
+- [x] Test mo task detail modal
+- [x] Test edit task (title, status, priority, due date)
+- [x] Test assign/unassign user
+- [x] Test subtasks CRUD
+- [x] Test checklist toggle + CRUD
+- [x] Test upload/delete attachment
