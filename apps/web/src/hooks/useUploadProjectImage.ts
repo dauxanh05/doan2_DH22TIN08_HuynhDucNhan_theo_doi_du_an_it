@@ -19,7 +19,7 @@ export function useUploadProjectImage() {
     mutationFn: async ({ projectId, file }: UploadProjectImageParams) => {
       const formData = new FormData();
       formData.append('image', file);
-      const response = await api.post<UploadProjectImageResponse>(
+      const response = await api.patch<UploadProjectImageResponse>(
         `/projects/${projectId}/image`,
         formData,
         {

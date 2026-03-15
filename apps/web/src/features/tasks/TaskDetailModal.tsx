@@ -9,6 +9,7 @@ import { useUpdateTask } from '@/hooks/useUpdateTask';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 import AttachmentSection from '@/features/tasks/AttachmentSection';
 import ChecklistSection from '@/features/tasks/ChecklistSection';
+import CommentSection from '@/features/tasks/CommentSection';
 import SubtaskList from '@/features/tasks/SubtaskList';
 
 const statusOptions = [
@@ -303,6 +304,8 @@ export default function TaskDetailModal({
               taskId={task.id}
               attachments={task.attachments}
             />
+
+            <CommentSection taskId={task.id} projectId={projectId} />
           </div>
         )}
       </div>

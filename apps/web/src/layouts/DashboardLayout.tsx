@@ -3,9 +3,11 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useSocket } from '@/hooks/useSocket';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 
 export default function DashboardLayout() {
+  useSocket();
   const location = useLocation();
   const navigate = useNavigate();
   const currentWorkspace = useWorkspaceStore((s) => s.currentWorkspace);

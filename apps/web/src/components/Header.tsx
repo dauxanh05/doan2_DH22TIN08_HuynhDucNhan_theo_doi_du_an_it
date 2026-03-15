@@ -1,5 +1,6 @@
-import { Bell, Moon, Sun, Search } from 'lucide-react';
+import { Moon, Sun, Search } from 'lucide-react';
 import { useThemeStore } from '@/stores/theme.store';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function Header() {
   const { theme, setTheme } = useThemeStore();
@@ -38,10 +39,7 @@ export default function Header() {
             <Moon className="w-5 h-5" />
           )}
         </button>
-        <button className="relative p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+        <NotificationBell />
       </div>
     </header>
   );

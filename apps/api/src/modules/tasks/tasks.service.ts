@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { TaskStatus } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
@@ -16,7 +17,10 @@ import { UpdateChecklistItemDto } from './dto/update-checklist-item.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsGateway: NotificationsGateway,
+  ) {}
 
   // ============================================================
   // Task CRUD
@@ -36,7 +40,7 @@ export class TasksService {
 
     const position = maxPositionTask ? maxPositionTask.position + 1 : 0;
 
-    return this.prisma.task.create({
+    const createdTask = await this.prisma.task.create({
       data: {
         projectId,
         title: dto.title,
@@ -47,6 +51,25 @@ export class TasksService {
         position,
       },
     });
+
+    // Fire-and-forget: emit WebSocket event
+    try {
+      const project = await this.prisma.project.findUnique({
+        where: { id: projectId },
+        select: { workspaceId: true },
+      });
+      if (project) {
+        this.notificationsGateway.emitToWorkspace(
+          project.workspaceId,
+          'task_created',
+          createdTask,
+        );
+      }
+    } catch (error) {
+      console.error('[TasksService] WS emit task_created error:', error);
+    }
+
+    return createdTask;
   }
 
   /**
@@ -168,10 +191,29 @@ export class TasksService {
       }
     }
 
-    return this.prisma.task.update({
+    const updatedTask = await this.prisma.task.update({
       where: { id },
       data,
     });
+
+    // Fire-and-forget: emit WebSocket event
+    try {
+      const project = await this.prisma.project.findUnique({
+        where: { id: updatedTask.projectId },
+        select: { workspaceId: true },
+      });
+      if (project) {
+        this.notificationsGateway.emitToWorkspace(
+          project.workspaceId,
+          'task_updated',
+          updatedTask,
+        );
+      }
+    } catch (error) {
+      console.error('[TasksService] WS emit task_updated error:', error);
+    }
+
+    return updatedTask;
   }
 
   /**
@@ -183,6 +225,7 @@ export class TasksService {
       where: { id },
       select: {
         id: true,
+        projectId: true,
         attachments: { select: { path: true } },
         subtasks: {
           select: {
@@ -194,6 +237,20 @@ export class TasksService {
 
     if (!task) {
       throw new NotFoundException('Task not found');
+    }
+
+    // Query workspaceId TRUOC khi xoa
+    let workspaceId: string | null = null;
+    try {
+      const project = await this.prisma.project.findUnique({
+        where: { id: task.projectId },
+        select: { workspaceId: true },
+      });
+      if (project) {
+        workspaceId = project.workspaceId;
+      }
+    } catch (error) {
+      console.error('[TasksService] Query workspaceId for delete error:', error);
     }
 
     // Thu thap tat ca attachment paths
@@ -211,6 +268,19 @@ export class TasksService {
     this.unlinkFiles(filePaths);
 
     await this.prisma.task.delete({ where: { id } });
+
+    // Fire-and-forget: emit WebSocket event SAU khi xoa
+    try {
+      if (workspaceId) {
+        this.notificationsGateway.emitToWorkspace(
+          workspaceId,
+          'task_deleted',
+          { taskId: id },
+        );
+      }
+    } catch (error) {
+      console.error('[TasksService] WS emit task_deleted error:', error);
+    }
 
     return { message: 'Task deleted successfully' };
   }
