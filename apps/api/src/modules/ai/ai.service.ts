@@ -13,7 +13,7 @@ import { AnalyzeProgressDto } from './dto/analyze-progress.dto';
 import { SuggestAssigneeDto } from './dto/suggest-assignee.dto';
 import { CodeAssistDto } from './dto/code-assist.dto';
 
-const AI_MODEL = 'claude-sonnet-4-5';
+const AI_MODEL = 'ag/gemini-3-flash';
 const AI_MAX_TOKENS = 4096;
 
 @Injectable()
@@ -33,17 +33,19 @@ export class AiService {
         this.httpService.post('', {
           model: AI_MODEL,
           max_tokens: AI_MAX_TOKENS,
+          stream: false,
           system: systemPrompt,
           messages: [{ role: 'user', content: userContent }],
         }),
       );
 
-      const content = response.data?.content;
-      if (!content || !content[0]?.text) {
+      // Gateway trả OpenAI-compatible format: choices[0].message.content
+      const text = response.data?.choices?.[0]?.message?.content;
+      if (!text) {
         throw new ServiceUnavailableException('AI service returned an unexpected response');
       }
 
-      return content[0].text as string;
+      return text as string;
     } catch (error) {
       if (error instanceof TimeoutError) {
         throw new GatewayTimeoutException('AI service timeout');
