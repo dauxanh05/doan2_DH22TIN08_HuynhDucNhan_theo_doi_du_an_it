@@ -4,15 +4,15 @@
 
 See: .context/PROJECT.md
 **Core value:** UX/UI xuat sac + AI features tich hop
-**Current focus:** Phase 5 (Comments & Real-time) — code xong, cho integration commit
+**Current focus:** Phase 6 (Dashboard) — code xong, cho manual test + verification
 
 ## Current Position
 
-Phase: 5 of 7 (Comments & Real-time) — IN PROGRESS
+Phase: 6 of 7 (Dashboard & Reports) — IN PROGRESS
 Branch: `main` (code truc tiep tren main)
-Status: FE + BE viet xong, chua integration commit
-Last activity: 2026-03-15 — Phase 5 FE components + hooks
-Progress: [################____] 80%
+Status: Phase 5 commit + push xong, Dashboard BE + FE code xong, local validation pass, cho manual test
+Last activity: 2026-03-15 — push Phase 5 + Dashboard commit len origin
+Progress: [#################___] 85%
 
 ## What's Done (Summary)
 
@@ -51,12 +51,13 @@ Progress: [################____] 80%
 
 ## What's Next
 
-1. Integration commit Phase 5 (BE + FE)
-2. Phase 6: Dashboard (branch 12-feat-dashboard-be + 13-feat-dashboard-fe)
+1. Manual test Dashboard + Comments + Notifications + Realtime
+2. Verify RT-01..10 va DASH-01..07 de cap nhat REQUIREMENTS
+3. Quyết định Phase tiep theo sau khi test xong
 
 ## Blockers/Concerns
 
-- Phase 5 chua co integration commit — can test manual sau khi merge BE
+- Chua co manual browser test cho Dashboard + Realtime sau 2 commit moi nhat
 
 ## Known Warnings (non-blocking)
 
@@ -73,26 +74,29 @@ Progress: [################____] 80%
 - Workspace BE before FE, sequential merge flow (2026-03-08)
 - Email-bound invite validation: joinByToken check user email match invitation (2026-03-08)
 - Phase 5 code tren main (khong tach branch rieng cho FE)
+- Quy uoc chia tab theo do kho/model: task binh thuong → Sonnet 4.6, task kho/nhieu file → Opus 4.6
 
 ## Session Log
 
 ### 2026-03-08
 
-- Branch 03 BE + 04 FE: workspace + team, 10 endpoints
-- Phase 2 DONE — WS-01..WS-14 all checked
+- Branch 03 BE + 04 FE: workspace + team, 10 endpoints (archived)
 
 ### 2026-03-14
 
-- Phase 3 commit vao main: branches 05 + 06 + 07 merged
-- PROJ-01..07, TASK-01..11, AI-01..06 all checked [x]
-- Phase 3 DONE — Phase 4 Kanban next
+- Phase 3 merged to main; PROJ-01..07, TASK-01..11, AI-01..06 checked
 
 ### 2026-03-15
 
-- Phase 4 DONE: KAN-01..07 [x], Kanban board merge vao main
-- Phase 5: BE (comments + notifications + WS gateway) code xong
-- Phase 5 FE: 13 files moi (socket, 8 hooks, 4 components), 3 files sua
-- RT-01..10 [~] — cho integration commit + manual test
+- Regression verification completed:
+  - Frontend: tsc --noEmit passed.
+  - Frontend build: vite build passed; only non-blocking "large chunk" warning observed.
+  - Backend: tsc --noEmit passed.
+  - Kanban: dnd-kit drag-drop + useSocket cache invalidation paths confirmed (WS events + local reorder flows).
+  - Project image upload: FE PATCH flow + BE FileInterceptor (multer) handling confirmed end-to-end.
+  - Code scan (scoped): no TODO/FIXME comments found (enum/status string matches ignored as false positives).
+  - Router/sidebar: mismatches reported only — global /projects vs workspace-scoped project routes; user settings routes vs workspace settings links.
+- No blockers; proceed to update ROADMAP/REQUIREMENTS if needed by test results.
 
 ---
 

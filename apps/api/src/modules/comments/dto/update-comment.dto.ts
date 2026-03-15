@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCommentDto {
@@ -7,4 +7,13 @@ export class UpdateCommentDto {
   @IsNotEmpty()
   @IsOptional()
   content?: string;
+
+  @ApiPropertyOptional({
+    description: 'Danh sách user IDs được mention',
+    type: [String],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  mentions?: string[];
 }

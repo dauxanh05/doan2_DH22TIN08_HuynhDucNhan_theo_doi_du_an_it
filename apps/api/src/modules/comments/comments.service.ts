@@ -139,7 +139,10 @@ export class CommentsService {
 
     return this.prisma.comment.update({
       where: { id },
-      data: { content: dto.content },
+      data: {
+        ...(dto.content !== undefined && { content: dto.content }),
+        ...(dto.mentions !== undefined && { mentions: dto.mentions }),
+      },
       include: {
         user: {
           select: {

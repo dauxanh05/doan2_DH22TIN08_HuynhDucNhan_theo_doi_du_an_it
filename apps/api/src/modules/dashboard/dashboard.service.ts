@@ -34,7 +34,20 @@ export class DashboardService {
       this.prisma.activity.count({ where: { workspaceId } }),
     ]);
 
-    return { data, total, page, limit };
+    const transformed = data.map((item) => ({
+      id: item.id,
+      userId: item.userId,
+      userName: item.user.name,
+      action: item.action,
+      entityType: item.entityType,
+      entityId: item.entityId,
+      entityName:
+        (item.metadata as Record<string, string> | null)?.entityName ??
+        item.entityId,
+      createdAt: item.createdAt,
+    }));
+
+    return { data: transformed, total, page, limit };
   }
 
   // ------- Private helpers -------
@@ -103,6 +116,7 @@ export class DashboardService {
         project: { workspaceId },
       },
       include: {
+        project: { select: { name: true } },
         assignees: {
           include: {
             user: { select: { id: true, name: true, avatar: true } },
@@ -115,9 +129,8 @@ export class DashboardService {
       .map((task) => ({
         id: task.id,
         title: task.title,
-        status: task.status,
-        priority: task.priority,
         dueDate: task.dueDate,
+        projectName: task.project.name,
         daysOverdue: Math.ceil(
           (now.getTime() - task.dueDate!.getTime()) / 86400000,
         ),
@@ -136,21 +149,34 @@ export class DashboardService {
 
     const workload = await Promise.all(
       members.map(async (member) => {
-        const activeTasks = await this.prisma.taskAssignee.count({
-          where: {
-            userId: member.userId,
-            task: {
-              parentId: null,
-              status: { not: TaskStatus.DONE },
-              project: { workspaceId },
+        const [activeTasks, completedTasks] = await Promise.all([
+          this.prisma.taskAssignee.count({
+            where: {
+              userId: member.userId,
+              task: {
+                parentId: null,
+                status: { not: TaskStatus.DONE },
+                project: { workspaceId },
+              },
             },
-          },
-        });
+          }),
+          this.prisma.taskAssignee.count({
+            where: {
+              userId: member.userId,
+              task: {
+                parentId: null,
+                status: TaskStatus.DONE,
+                project: { workspaceId },
+              },
+            },
+          }),
+        ]);
 
         return {
-          user: member.user,
-          role: member.role,
+          userId: member.userId,
+          name: member.user.name,
           activeTasks,
+          completedTasks,
         };
       }),
     );

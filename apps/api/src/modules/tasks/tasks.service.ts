@@ -275,7 +275,7 @@ export class TasksService {
         this.notificationsGateway.emitToWorkspace(
           workspaceId,
           'task_deleted',
-          { taskId: id },
+          { taskId: id, projectId: task.projectId },
         );
       }
     } catch (error) {

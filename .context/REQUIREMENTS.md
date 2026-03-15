@@ -98,13 +98,13 @@
 
 ### Dashboard & Reports (DASH)
 
-- [ ] **DASH-01**: Dashboard stats API (project progress, tasks by status, overdue, workload)
-- [ ] **DASH-02**: Activity feed API (paginated, 20 items/page)
-- [ ] **DASH-03**: ProjectProgressWidget — progress bar moi project
-- [ ] **DASH-04**: TasksStatusChart — Recharts pie chart (TODO/IN_PROGRESS/DONE)
-- [ ] **DASH-05**: OverdueTasksWidget — danh sach task qua han
-- [ ] **DASH-06**: RecentActivityWidget — feed hoat dong gan day
-- [ ] **DASH-07**: MemberWorkloadChart — Recharts bar chart so task/member
+- [~] **DASH-01**: Dashboard stats API (project progress, tasks by status, overdue, workload)
+- [~] **DASH-02**: Activity feed API (paginated, 20 items/page)
+- [~] **DASH-03**: ProjectProgressWidget — progress bar moi project
+- [~] **DASH-04**: TasksStatusChart — Recharts pie chart (TODO/IN_PROGRESS/DONE)
+- [~] **DASH-05**: OverdueTasksWidget — danh sach task qua han
+- [~] **DASH-06**: RecentActivityWidget — feed hoat dong gan day
+- [~] **DASH-07**: MemberWorkloadChart — Recharts bar chart so task/member
 
 ### Polish & Deploy (DEPLOY)
 
