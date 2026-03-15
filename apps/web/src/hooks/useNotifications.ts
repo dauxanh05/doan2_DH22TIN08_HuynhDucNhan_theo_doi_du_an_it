@@ -6,7 +6,7 @@ export interface Notification {
   type: string;
   title: string;
   message: string;
-  isRead: boolean;
+  read: boolean;
   data: { taskId?: string; projectId?: string } | null;
   createdAt: string;
 }

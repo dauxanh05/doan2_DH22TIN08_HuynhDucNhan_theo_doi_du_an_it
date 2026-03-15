@@ -17,7 +17,7 @@ export default function Sidebar() {
 
   // Build navigation items dynamically based on current workspace
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     ...(currentWorkspace
       ? [
           {

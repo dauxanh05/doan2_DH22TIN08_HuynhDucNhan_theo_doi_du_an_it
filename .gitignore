@@ -37,6 +37,11 @@ apps/api/prisma/migrations/*.sql.pending
 # Uploads
 uploads/*
 !uploads/.gitkeep
+apps/api/uploads/**
+!apps/api/uploads/
+!apps/api/uploads/**/
+!apps/api/uploads/.gitkeep
+!apps/api/uploads/**/.gitkeep
 
 # Misc
 *.tsbuildinfo

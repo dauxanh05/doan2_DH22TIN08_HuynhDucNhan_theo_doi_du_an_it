@@ -39,10 +39,10 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  const hasUnread = (notifications ?? []).some((n: Notification) => !n.isRead);
+  const hasUnread = (notifications ?? []).some((n: Notification) => !n.read);
 
   const handleItemClick = (notification: Notification) => {
-    if (!notification.isRead) {
+    if (!notification.read) {
       markRead.mutate(notification.id);
     }
   };
@@ -87,7 +87,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                   type="button"
                   onClick={() => handleItemClick(notification)}
                   className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
-                    !notification.isRead
+                    !notification.read
                       ? 'bg-indigo-50 dark:bg-indigo-950/30'
                       : 'bg-white dark:bg-gray-800'
                   }`}
@@ -95,7 +95,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                   {/* Icon */}
                   <span
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      !notification.isRead
+                      !notification.read
                         ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-400'
                         : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
                     }`}
@@ -107,7 +107,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                   <div className="flex-1 min-w-0">
                     <p
                       className={`text-sm font-medium leading-snug ${
-                        !notification.isRead
+                        !notification.read
                           ? 'text-gray-900 dark:text-white'
                           : 'text-gray-700 dark:text-gray-300'
                       }`}
@@ -126,7 +126,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                   </div>
 
                   {/* Unread dot */}
-                  {!notification.isRead && (
+                  {!notification.read && (
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
                   )}
                 </button>

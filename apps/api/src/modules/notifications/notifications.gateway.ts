@@ -11,6 +11,7 @@ import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @WebSocketGateway({
   cors: {
@@ -30,6 +31,7 @@ export class NotificationsGateway
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    private prisma: PrismaService,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -71,6 +73,22 @@ export class NotificationsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { workspaceId: string },
   ) {
+    const userId = client.data.userId;
+    if (!userId) return;
+
+    const member = await this.prisma.workspaceMember.findUnique({
+      where: {
+        userId_workspaceId: { userId, workspaceId: data.workspaceId },
+      },
+    });
+
+    if (!member) {
+      this.logger.warn(
+        `Client ${client.id} denied join workspace:${data.workspaceId} — not a member`,
+      );
+      return;
+    }
+
     await client.join(`workspace:${data.workspaceId}`);
     this.logger.log(
       `Client ${client.id} joined workspace:${data.workspaceId}`,

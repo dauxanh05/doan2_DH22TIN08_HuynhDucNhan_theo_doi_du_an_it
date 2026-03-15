@@ -1,72 +1,122 @@
-import { BarChart3, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { useWorkspaceStore } from '@/stores/workspace.store';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
+import ProjectProgressWidget from './ProjectProgressWidget';
+import TasksStatusChart from './TasksStatusChart';
+import OverdueTasksWidget from './OverdueTasksWidget';
+import MemberWorkloadChart from './MemberWorkloadChart';
+import RecentActivityWidget from './RecentActivityWidget';
 
-const stats = [
-  { name: 'Tổng dự án', value: '12', icon: BarChart3, color: 'bg-blue-500' },
-  { name: 'Hoàn thành', value: '8', icon: CheckCircle, color: 'bg-green-500' },
-  { name: 'Đang thực hiện', value: '3', icon: Clock, color: 'bg-yellow-500' },
-  { name: 'Quá hạn', value: '1', icon: AlertCircle, color: 'bg-red-500' },
-];
+function SkeletonCard() {
+  return (
+    <div className="card p-6 animate-pulse">
+      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
+      <div className="space-y-3">
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/6" />
+      </div>
+      <div className="mt-4 h-32 bg-gray-200 dark:bg-gray-700 rounded" />
+    </div>
+  );
+}
 
 export default function DashboardPage() {
+  const currentWorkspace = useWorkspaceStore((s) => s.currentWorkspace);
+  const { data: stats, isLoading, isError } = useDashboardStats(currentWorkspace?.id);
+
+  // No workspace selected
+  if (!currentWorkspace) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Tổng quan về tiến độ dự án của bạn
+          </p>
+        </div>
+        <div className="card p-12 text-center">
+          <p className="text-gray-400 text-lg">
+            Chọn workspace để xem dashboard
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Dashboard — {currentWorkspace.name}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Tổng quan về tiến độ dự án của bạn
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+        <SkeletonCard />
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError || !stats) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Dashboard — {currentWorkspace.name}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Tổng quan về tiến độ dự án của bạn
+          </p>
+        </div>
+        <div className="card p-12 text-center">
+          <p className="text-red-500">
+            Không thể tải dữ liệu dashboard. Vui lòng thử lại sau.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Dashboard
+          Dashboard — {currentWorkspace.name}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
           Tổng quan về tiến độ dự án của bạn
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div key={stat.name} className="card p-6">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-lg ${stat.color}`}>
-                <stat.icon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {stat.name}
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stat.value}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Placeholder charts */}
+      {/* Row 1: Project Progress + Tasks Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Tasks theo trạng thái
-          </h3>
-          <div className="h-64 flex items-center justify-center text-gray-400">
-            Chart sẽ được thêm sau
-          </div>
-        </div>
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Tiến độ dự án
-          </h3>
-          <div className="h-64 flex items-center justify-center text-gray-400">
-            Chart sẽ được thêm sau
-          </div>
-        </div>
+        <ProjectProgressWidget projects={stats.projectsProgress} />
+        <TasksStatusChart tasksByStatus={stats.tasksByStatus} />
       </div>
 
-      {/* Recent tasks */}
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Tasks gần đây
-        </h3>
-        <div className="text-center py-12 text-gray-400">
-          Chưa có task nào. Hãy tạo dự án đầu tiên!
+      {/* Row 2: Overdue Tasks + Member Workload */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <OverdueTasksWidget overdueTasks={stats.overdueTasks} />
+        <MemberWorkloadChart memberWorkload={stats.memberWorkload} />
+      </div>
+
+      {/* Row 3: Recent Activity (full width) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="lg:col-span-2">
+          <RecentActivityWidget workspaceId={currentWorkspace.id} />
         </div>
       </div>
     </div>

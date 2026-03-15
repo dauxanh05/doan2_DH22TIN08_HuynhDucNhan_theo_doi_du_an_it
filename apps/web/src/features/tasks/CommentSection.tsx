@@ -97,13 +97,13 @@ export default function CommentSection({ taskId }: CommentSectionProps) {
             <div key={comment.id} className="flex gap-3">
               {/* Avatar */}
               <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
-                {comment.author.name.charAt(0).toUpperCase()}
+                {comment.user.name.charAt(0).toUpperCase()}
               </span>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {comment.author.name}
+                    {comment.user.name}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {formatDistanceToNow(new Date(comment.createdAt), {

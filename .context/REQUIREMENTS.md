@@ -66,13 +66,13 @@
 
 ### Kanban Board (KAN)
 
-- [ ] **KAN-01**: Hien thi Kanban board 3 cot co dinh: TODO, IN_PROGRESS, DONE
-- [ ] **KAN-02**: Task card hien thi: title, priority badge, assignee avatars, due date
-- [ ] **KAN-03**: Drag-drop cross-column (doi status) bang @dnd-kit
-- [ ] **KAN-04**: Drag-drop same-column reorder (doi position)
-- [ ] **KAN-05**: Filter: assignee + priority + search (client-side, AND logic)
-- [ ] **KAN-06**: Quick add task inline moi cot
-- [ ] **KAN-07**: Overdue styling (do neu qua han, vang neu hom nay)
+- [x] **KAN-01**: Hien thi Kanban board 3 cot co dinh: TODO, IN_PROGRESS, DONE
+- [x] **KAN-02**: Task card hien thi: title, priority badge, assignee avatars, due date
+- [x] **KAN-03**: Drag-drop cross-column (doi status) bang @dnd-kit
+- [x] **KAN-04**: Drag-drop same-column reorder (doi position)
+- [x] **KAN-05**: Filter: assignee + priority + search (client-side, AND logic)
+- [x] **KAN-06**: Quick add task inline moi cot
+- [x] **KAN-07**: Overdue styling (do neu qua han, vang neu hom nay)
 
 ### AI Features (AI)
 
@@ -85,16 +85,16 @@
 
 ### Comments & Real-time (RT)
 
-- [ ] **RT-01**: Them/sua/xoa comment trong task (chi nguoi viet duoc sua/xoa)
-- [ ] **RT-02**: @mention voi autocomplete dropdown (highlight xanh, click xem profile)
-- [ ] **RT-03**: Tao notification khi @mention
-- [ ] **RT-04**: Xem danh sach notifications (paginated)
-- [ ] **RT-05**: Danh dau da doc / doc tat ca notifications
-- [ ] **RT-06**: Unread count badge tren notification bell
-- [ ] **RT-07**: WebSocket Gateway (Socket.io) voi JWT authentication
-- [ ] **RT-08**: Real-time events: task_created, task_updated, task_deleted, comment_added
-- [ ] **RT-09**: Real-time Kanban updates (thay card di chuyen khi nguoi khac keo)
-- [ ] **RT-10**: 7 loai notification: TASK_ASSIGNED, TASK_UPDATED, TASK_COMPLETED, COMMENT_ADDED, COMMENT_MENTION, DEADLINE_APPROACHING, INVITATION_RECEIVED
+- [~] **RT-01**: Them/sua/xoa comment trong task (chi nguoi viet duoc sua/xoa)
+- [~] **RT-02**: @mention voi autocomplete dropdown (highlight xanh, click xem profile)
+- [~] **RT-03**: Tao notification khi @mention
+- [~] **RT-04**: Xem danh sach notifications (paginated)
+- [~] **RT-05**: Danh dau da doc / doc tat ca notifications
+- [~] **RT-06**: Unread count badge tren notification bell
+- [~] **RT-07**: WebSocket Gateway (Socket.io) voi JWT authentication
+- [~] **RT-08**: Real-time events: task_created, task_updated, task_deleted, comment_added
+- [~] **RT-09**: Real-time Kanban updates (thay card di chuyen khi nguoi khac keo)
+- [~] **RT-10**: 7 loai notification: TASK_ASSIGNED, TASK_UPDATED, TASK_COMPLETED, COMMENT_ADDED, COMMENT_MENTION, DEADLINE_APPROACHING, INVITATION_RECEIVED
 
 ### Dashboard & Reports (DASH)
 
@@ -162,8 +162,8 @@
 | PROJ-01..07 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Hoan thanh |
 | TASK-01..11 | Phase 3 | `05-feat-project-task-be`, `06-feat-project-task-fe` | Hoan thanh |
 | AI-01..06 | Phase 3 | `07-feat-ai-be`, `08-feat-ai-fe` | Hoan thanh |
-| KAN-01..07 | Phase 4 | `09-feat-kanban-fe` | Chua lam |
-| RT-01..10 | Phase 5 | `10-feat-realtime-be`, `11-feat-realtime-fe` | Chua lam |
+| KAN-01..07 | Phase 4 | `09-feat-kanban-fe` | Hoan thanh |
+| RT-01..10 | Phase 5 | `10-feat-realtime-be`, `11-feat-realtime-fe` | Dang hoan thien |
 | DASH-01..07 | Phase 6 | `12-feat-dashboard-be`, `13-feat-dashboard-fe` | Chua lam |
 | DEPLOY-01..10 | Phase 7 | `14-feat-polish`, `15-chore-deploy` | Chua lam |
 
@@ -172,4 +172,4 @@
 
 ---
 
-*Last updated: 2026-03-14*
+*Last updated: 2026-03-15*

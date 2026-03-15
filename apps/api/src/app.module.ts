@@ -9,6 +9,7 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FilesModule } from './modules/files/files.module';
 import { EmailModule } from './modules/email/email.module';
@@ -39,6 +40,7 @@ import { AiModule } from './modules/ai/ai.module';
     ProjectsModule,
     TasksModule,
     CommentsModule,
+    DashboardModule,
     NotificationsModule,
     FilesModule,
     AiModule,

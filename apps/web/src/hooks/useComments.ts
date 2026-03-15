@@ -9,9 +9,10 @@ export interface Comment {
   mentions: string[];
   createdAt: string;
   updatedAt: string;
-  author: {
+  user: {
     id: string;
     name: string;
+    email: string;
     avatar: string | null;
   };
 }
